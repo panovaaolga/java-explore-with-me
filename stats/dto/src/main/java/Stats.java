@@ -1,9 +1,18 @@
+import lombok.*;
+
 import javax.persistence.*;
 
 @Entity
-@Table
+@Table(name = "stats")
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class Stats {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "stats_id")
     private Long id;
     @Column
     private String app;
