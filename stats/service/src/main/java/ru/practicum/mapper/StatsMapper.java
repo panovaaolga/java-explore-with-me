@@ -1,3 +1,8 @@
+package ru.practicum.mapper;
+
+import ru.practicum.dto.Stats;
+import ru.practicum.dto.StatsDtoInput;
+
 public class StatsMapper {
 
     public static Stats mapToNewStats(StatsDtoInput statsDtoInput) {
@@ -5,7 +10,7 @@ public class StatsMapper {
         stats.setApp(statsDtoInput.getApp());
         stats.setIp(statsDtoInput.getIp());
         stats.setUri(statsDtoInput.getUri());
-        stats.setTimestamp(statsDtoInput.getTimestamp());
+        stats.setVisited(statsDtoInput.getVisited());
         return stats;
     }
 }

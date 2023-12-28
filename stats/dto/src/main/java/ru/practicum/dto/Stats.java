@@ -1,6 +1,9 @@
+package ru.practicum.dto;
+
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "stats")
@@ -20,8 +23,8 @@ public class Stats {
     private String uri;
     @Column
     private String ip;
-    @Column
-    private String timestamp;
+    @Column(name = "visited")
+    private LocalDateTime visited;
 
 
 }
