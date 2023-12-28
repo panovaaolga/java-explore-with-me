@@ -1,12 +1,12 @@
 package ru.practicum.mapper;
 
-import ru.practicum.dto.Stats;
-import ru.practicum.dto.StatsDtoInput;
+import ru.practicum.dto.EndpointHit;
+import ru.practicum.dto.EndpointHitDto;
 
 public class StatsMapper {
 
-    public static Stats mapToNewStats(StatsDtoInput statsDtoInput) {
-        Stats stats = new Stats();
+    public static EndpointHit mapToNewStats(EndpointHitDto statsDtoInput) {
+        EndpointHit stats = new EndpointHit();
         stats.setApp(statsDtoInput.getApp());
         stats.setIp(statsDtoInput.getIp());
         stats.setUri(statsDtoInput.getUri());

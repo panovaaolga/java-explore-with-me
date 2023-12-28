@@ -7,7 +7,7 @@ import lombok.*;
 @Getter
 @Setter
 @ToString
-public class StatsDtoOutput {
+public class ViewStats {
     private String app;
     private String uri;
     private long hits;

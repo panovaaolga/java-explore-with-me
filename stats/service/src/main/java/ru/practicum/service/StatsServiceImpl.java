@@ -1,9 +1,9 @@
 package ru.practicum.service;
 
 import lombok.extern.slf4j.Slf4j;
-import ru.practicum.dto.StatsDtoInput;
-import ru.practicum.dto.StatsDtoOutput;
+import ru.practicum.dto.EndpointHitDto;
 import lombok.RequiredArgsConstructor;
+import ru.practicum.dto.ViewStats;
 import ru.practicum.mapper.StatsMapper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -23,13 +23,13 @@ public class StatsServiceImpl implements StatsService {
 
     @Transactional
     @Override
-    public void addHit(StatsDtoInput statsDtoInput) {
+    public void addHit(EndpointHitDto statsDtoInput) {
         statsRepository.save(StatsMapper.mapToNewStats(statsDtoInput));
     }
 
     @Override
-    public List<StatsDtoOutput> getStats(LocalDateTime start, LocalDateTime end, String[] uris,
-                                         boolean unique, int from, int size) {
+    public List<ViewStats> getStats(LocalDateTime start, LocalDateTime end, String[] uris,
+                                    boolean unique, int from, int size) {
         if (unique) {
             if (uris == null) {
                 return statsRepository.findUniqueHits(start, end, PageRequest.of(from / size, size))

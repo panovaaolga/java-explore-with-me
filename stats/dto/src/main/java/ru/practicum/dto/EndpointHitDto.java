@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @ToString
-public class StatsDtoInput {
+public class EndpointHitDto {
     @NotBlank
     private String app;
     @NotBlank
