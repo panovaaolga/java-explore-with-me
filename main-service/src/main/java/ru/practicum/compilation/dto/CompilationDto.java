@@ -2,9 +2,7 @@ package ru.practicum.compilation.dto;
 
 import ru.practicum.event.dto.EventShortDto;
 
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -13,11 +11,16 @@ import java.util.List;
 @Table(name = "compilations")
 public class CompilationDto {
     @NotNull
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "compilation_id", updatable = false)
     private Long id;
-    @NotNull
-    private Boolean pinned;
+    @Column
+    private boolean pinned;
     @NotBlank
+    @Column
     private String title;
-    @JoinColumn //Many-To-One?
-    private List<EventShortDto> events;
+    @JoinColumn(name = "event_id") //JoinTable?
+    @ManyToMany
+    private List<EventShortDto> events; //Set?
 }

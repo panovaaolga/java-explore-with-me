@@ -16,7 +16,7 @@ import javax.validation.constraints.Size;
 public class CategoryDto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "category_id")
+    @Column(name = "category_id", updatable = false)
     private Long id;
     @NotBlank
     @Size(min = 1, max = 50)

@@ -21,11 +21,13 @@ public class PublicCompilationController {
     public List<CompilationDto> getCompilations(@RequestParam Boolean pinned,
                                                 @PositiveOrZero @RequestParam(defaultValue = "0") int from,
                                                 @Positive @RequestParam(defaultValue = "10") int size) {
-        return null;
+        log.info("Public. Получение подборок событий, где pinned = {}", pinned);
+        return compilationService.getCompilations(pinned, from, size);
     }
 
     @GetMapping("/{compId}")
     public CompilationDto getCompilationById(@PathVariable long compId) {
-        return null;
+        log.info("Public. Получение подборки событий с id = {}", compId);
+        return compilationService.getCompilationById(compId);
     }
 }

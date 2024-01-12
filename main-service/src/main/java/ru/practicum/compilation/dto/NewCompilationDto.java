@@ -1,13 +1,16 @@
 package ru.practicum.compilation.dto;
 
-import ru.practicum.event.dto.EventShortDto;
+import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
-import java.util.List;
+import javax.validation.constraints.Size;
+import java.util.Set;
 
+@Data
 public class NewCompilationDto {
-    private Boolean pinned; //default = false
+    private boolean pinned;
     @NotBlank
+    @Size(min = 1, max = 50)
     private String title;
-    private List<EventShortDto> events;
+    private Set<Long> events;
 }

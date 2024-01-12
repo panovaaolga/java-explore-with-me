@@ -22,9 +22,9 @@ public class UserDto {
     private String email;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
+    @Column(name = "user_id", updatable = false)
     private Long id;
     @NotBlank
-    @Column
+    @Column(name = "username")
     private String name;
 }
