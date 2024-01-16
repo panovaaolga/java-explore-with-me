@@ -2,14 +2,13 @@ package ru.practicum.compilation.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
-import ru.practicum.NotFoundException;
+import ru.practicum.exceptions.NotFoundException;
 import ru.practicum.compilation.Compilation;
 import ru.practicum.compilation.CompilationMapper;
 import ru.practicum.compilation.dto.CompilationDto;
 import ru.practicum.compilation.dto.NewCompilationDto;
 import ru.practicum.compilation.dto.UpdateCompilationRequest;
 import ru.practicum.compilation.repository.CompilationRepo;
-import ru.practicum.event.model.Event;
 import ru.practicum.event.service.EventService;
 
 import java.util.List;

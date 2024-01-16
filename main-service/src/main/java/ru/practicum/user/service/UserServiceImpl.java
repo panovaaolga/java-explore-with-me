@@ -3,7 +3,7 @@ package ru.practicum.user.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.NotFoundException;
+import ru.practicum.exceptions.NotFoundException;
 import ru.practicum.user.User;
 import ru.practicum.user.UserMapper;
 import ru.practicum.user.dto.NewUserRequest;
