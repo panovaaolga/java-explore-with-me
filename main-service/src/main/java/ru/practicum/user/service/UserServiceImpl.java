@@ -3,6 +3,8 @@ package ru.practicum.user.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.NotFoundException;
+import ru.practicum.user.User;
 import ru.practicum.user.UserMapper;
 import ru.practicum.user.dto.NewUserRequest;
 import ru.practicum.user.dto.UserDto;
@@ -16,17 +18,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserDto> getUsers(List<Long> ids, int from, int size) {
-        if (ids.isEmpty()) {
-            return userRepository.findAllOrderByName(PageRequest.of(from / size, size)).getContent();
+        if (ids == null) {
+            return UserMapper.mapToDtoList(userRepository
+                    .findAllOrderById(PageRequest.of(from / size, size)).getContent());
         } else {
-            return userRepository.findByIdIn(ids, PageRequest.of(from / size, size)).getContent();
+            return UserMapper.mapToDtoList(userRepository
+                    .findByIdInOrderById(ids, PageRequest.of(from / size, size)).getContent());
         }
     }
 
     @Override
     @Transactional
     public UserDto createUser(NewUserRequest newUserRequest) {
-        return userRepository.save(UserMapper.mapToUser(newUserRequest));
+        return UserMapper.mapToUserDto(userRepository.save(UserMapper.mapToUser(newUserRequest)));
     }
 
     @Override
@@ -34,6 +38,6 @@ public class UserServiceImpl implements UserService {
         if (userRepository.existsById(userId)) {
             userRepository.deleteById(userId);
         }
-        //throw
+        throw new NotFoundException(User.class.getName(), userId);
     }
 }

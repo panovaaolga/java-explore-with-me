@@ -3,6 +3,7 @@ package ru.practicum.user.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.lang.Nullable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.user.dto.NewUserRequest;
@@ -14,14 +15,14 @@ import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @RestController
-@RequestMapping("/admin/users")
+@RequestMapping(path = "/admin/users", consumes = "application/json", produces = "application/json")
 @Slf4j
 @RequiredArgsConstructor
 public class AdminUserController {
     private final UserService userService;
 
     @GetMapping
-    public List<UserDto> getUsers(@RequestParam List<Long> ids,
+    public List<UserDto> getUsers(@RequestParam @Nullable List<Long> ids,
                                   @PositiveOrZero @RequestParam(defaultValue = "0") int from,
                                   @Positive @RequestParam(defaultValue = "10") int size) {
         log.info("Получаем список пользователей, ids = {}", ids);

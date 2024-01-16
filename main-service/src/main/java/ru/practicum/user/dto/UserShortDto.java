@@ -1,17 +1,13 @@
 package ru.practicum.user.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-@Getter
+@Data
 @AllArgsConstructor
-@ToString
-@EqualsAndHashCode
 public class UserShortDto {
     @NotNull
     private Long id;

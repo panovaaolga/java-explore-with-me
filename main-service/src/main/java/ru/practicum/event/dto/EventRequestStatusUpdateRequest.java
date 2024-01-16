@@ -1,6 +1,6 @@
 package ru.practicum.event.dto;
 
-import ru.practicum.event.Status;
+import ru.practicum.event.model.Status;
 
 import java.util.List;
 

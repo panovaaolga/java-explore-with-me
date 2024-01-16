@@ -3,11 +3,29 @@ package ru.practicum.category;
 import ru.practicum.category.dto.CategoryDto;
 import ru.practicum.category.dto.NewCategoryDto;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class CategoryMapper {
 
-    public static CategoryDto mapToDto(NewCategoryDto newCategoryDto) {
+    public static Category mapToCategory(NewCategoryDto newCategoryDto) {
+        Category category = new Category();
+        category.setName(newCategoryDto.getName());
+        return category;
+    }
+
+    public static CategoryDto mapToCategoryDto(Category category) {
         CategoryDto categoryDto = new CategoryDto();
-        categoryDto.setName(newCategoryDto.getName());
+        categoryDto.setName(category.getName());
+        categoryDto.setId(category.getId());
         return categoryDto;
+    }
+
+    public static List<CategoryDto> mapToDtoList(List<Category> categories) {
+        List<CategoryDto> categoryDtos = new ArrayList<>();
+        for (Category c : categories) {
+            categoryDtos.add(mapToCategoryDto(c));
+        }
+        return categoryDtos;
     }
 }

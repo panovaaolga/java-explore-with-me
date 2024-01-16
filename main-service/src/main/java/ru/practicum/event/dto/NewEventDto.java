@@ -1,14 +1,16 @@
 package ru.practicum.event.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Data;
 import ru.practicum.category.dto.CategoryDto;
-import ru.practicum.event.dto.Location;
+import ru.practicum.event.model.Location;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
+@Data
 public class NewEventDto {
     @NotBlank
     @Size(min = 20, max = 2000)

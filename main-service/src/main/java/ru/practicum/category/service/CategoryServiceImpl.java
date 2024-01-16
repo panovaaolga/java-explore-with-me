@@ -3,12 +3,15 @@ package ru.practicum.category.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.NotFoundException;
+import ru.practicum.category.Category;
 import ru.practicum.category.CategoryMapper;
 import ru.practicum.category.dto.CategoryDto;
 import ru.practicum.category.dto.NewCategoryDto;
 import ru.practicum.category.repository.CategoryRepository;
 
 import java.util.List;
+import java.util.Objects;
 
 @RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
@@ -16,18 +19,20 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public List<CategoryDto> getCategories(int from, int size) {
-        return categoryRepository.findAllOrderByName(PageRequest.of(from / size, size)).getContent();
+        return CategoryMapper.mapToDtoList(categoryRepository
+                .findAll(PageRequest.of(from / size, size)).getContent());
     }
 
     @Override
     public CategoryDto getCategoryById(long catId) {
-        return categoryRepository.findById(catId).orElseThrow(); // переписать
+        return CategoryMapper.mapToCategoryDto(categoryRepository.findById(catId)
+                .orElseThrow(() -> new NotFoundException(Category.class.getName(), catId)));
     }
 
     @Override
     @Transactional
     public CategoryDto createCategory(NewCategoryDto newCategoryDto) {
-        return categoryRepository.save(CategoryMapper.mapToDto(newCategoryDto));
+        return CategoryMapper.mapToCategoryDto(categoryRepository.save(CategoryMapper.mapToCategory(newCategoryDto)));
     }
 
     @Override
@@ -35,12 +40,17 @@ public class CategoryServiceImpl implements CategoryService {
         if (categoryRepository.existsById(catId)) {
             categoryRepository.deleteById(catId);
         }
-        //throw
-
+        throw new NotFoundException(Category.class.getName(), catId);
     }
 
     @Override
+    @Transactional
     public CategoryDto updateCategory(long catId, CategoryDto categoryDto) {
-        return null;
+        Category category = categoryRepository.findById(catId)
+                .orElseThrow(() ->  new NotFoundException(Category.class.getName(), catId));
+        if (!categoryDto.getName().equals(category.getName())) {
+            category.setName(categoryDto.getName());
+        }
+        return CategoryMapper.mapToCategoryDto(categoryRepository.save(category));
     }
 }
