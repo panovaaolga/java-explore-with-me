@@ -2,6 +2,7 @@ package ru.practicum.user.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.exceptions.NotFoundException;
 import ru.practicum.user.User;
@@ -13,6 +14,7 @@ import ru.practicum.user.repository.UserRepository;
 import java.util.List;
 
 @RequiredArgsConstructor
+@Service
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
@@ -39,5 +41,10 @@ public class UserServiceImpl implements UserService {
             userRepository.deleteById(userId);
         }
         throw new NotFoundException(User.class.getName(), userId);
+    }
+
+    @Override
+    public User getUserById(long userId) {
+        return userRepository.findById(userId).orElseThrow(() -> new NotFoundException(User.class.getName(), userId));
     }
 }

@@ -2,6 +2,7 @@ package ru.practicum.event.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Value;
 import ru.practicum.category.dto.CategoryDto;
 import ru.practicum.event.model.Location;
 
@@ -25,9 +26,10 @@ public class NewEventDto {
     private LocalDateTime eventDate;
     @NotNull
     private Location location;
-    private Boolean paid; //default = false
-    private Integer participantLimit; //default = 0
-    private Boolean requestModeration; //default = true
+    private boolean paid;
+    private int participantLimit;
+    @Value("true")
+    private boolean requestModeration; //default = true
     @NotBlank
     @Size(min = 3, max = 120)
     private String title;

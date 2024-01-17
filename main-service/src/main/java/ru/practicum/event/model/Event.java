@@ -25,7 +25,9 @@ public class Event {
     @JoinColumn(referencedColumnName = "category_id")
     private Category category;
     @Column
-    private Long confirmedRequests;
+    private long confirmedRequests;
+    @Column
+    private LocalDateTime createdOn;
     @Column
     private String description;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -36,20 +38,21 @@ public class Event {
 
     private Location location; //как хранить данные о локации?
     @Column
-    private Boolean paid;
+    private boolean paid;
     @Column
-    private Integer participantLimit; //default = 0
+    private int participantLimit;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Column
     private LocalDateTime publishedOn;
     @Column
-    private Boolean requestModeration; //default = true
+    private boolean requestModeration;
     @Column
-    private State state;
+    @Enumerated(EnumType.STRING)
+    private EventState state;
     @Column
     private String title;
     @Column
-    private Long views; //как обновлять статистику?? Каждый раз после просмотра?
+    private long views; //как обновлять статистику?? Каждый раз после просмотра?
     @JoinTable
     @ManyToMany
     private Set<Compilation> compilations; //дописать

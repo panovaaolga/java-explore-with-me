@@ -18,20 +18,20 @@ import java.util.List;
 public class AdminEventController {
 
     @GetMapping
-    public List<EventFullDto> getEvents(@RequestParam List<Long> users,
+    public List<EventFullDto> getEventsAdmin(@RequestParam List<Long> users,
                                         @RequestParam List<String> states,
                                         @RequestParam List<Long> categories,
                                         @RequestParam String rangeStart,
                                         @RequestParam String rangeEnd,
                                         @PositiveOrZero @RequestParam(defaultValue = "0") int from,
                                         @Positive @RequestParam(defaultValue = "10") int size) {
-        log.info("Admin. Получение событий. users = {}, states = {}, categories = {}, start = {}. end = {}",
+        log.info("Admin. Получение событий. users = {}, states = {}, categories = {}, start = {}, end = {}",
                 users, states, categories, rangeStart, rangeEnd);
         return null;
     }
 
     @PatchMapping("/{eventId}")
-    public EventFullDto updateEvent(@PathVariable long eventId,
+    public EventFullDto updateEventAdmin(@PathVariable long eventId,
                                     @RequestBody @Validated UpdateEventAdminRequest updateEventAdminRequest) {
         log.info("Admin. Обновление события. eventId = {}, request = {}", eventId, updateEventAdminRequest);
         return null;

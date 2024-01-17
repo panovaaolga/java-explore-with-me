@@ -2,6 +2,7 @@ package ru.practicum.category.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.exceptions.NotFoundException;
 import ru.practicum.category.Category;
@@ -13,6 +14,7 @@ import ru.practicum.category.repository.CategoryRepository;
 import java.util.List;
 
 @RequiredArgsConstructor
+@Service
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
 

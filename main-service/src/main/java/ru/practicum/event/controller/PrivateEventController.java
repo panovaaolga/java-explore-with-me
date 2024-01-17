@@ -2,6 +2,7 @@ package ru.practicum.event.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.event.dto.*;
@@ -17,7 +18,7 @@ import java.util.List;
 public class PrivateEventController {
 
     @GetMapping
-    public List<EventShortDto> getEventsOfUser(@PathVariable long userId,
+    public List<EventShortDto> getEventsPrivate(@PathVariable long userId,
                                                @PositiveOrZero @RequestParam(defaultValue = "0") int from,
                                                @Positive @RequestParam(defaultValue = "10") int size) {
         log.info("Private. Получение событий. userId = {}", userId);
@@ -25,6 +26,7 @@ public class PrivateEventController {
     }
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public EventFullDto createEvent(@PathVariable long userId,
                                     @Validated @RequestBody NewEventDto newEventDto) {
         log.info("Private. Создание события. userId = {}, newEventDto: {}", userId, newEventDto);
@@ -32,14 +34,14 @@ public class PrivateEventController {
     }
 
     @GetMapping("/{eventId}")
-    public EventFullDto getEventById(@PathVariable long userId, @PathVariable long eventId) {
+    public EventFullDto getEventByIdPrivate(@PathVariable long userId, @PathVariable long eventId) {
         log.info("Private. Получение события. eventId = {}, userId = {}", eventId, userId);
         return null;
     }
 
     @PatchMapping("/{eventId}")
-    public EventFullDto updateEvent(@PathVariable long userId, @PathVariable long eventId,
-                                    @RequestBody UpdateEventUserRequest updateEventUserRequest) {
+    public EventFullDto updateEventPrivate(@PathVariable long userId, @PathVariable long eventId,
+                                    @RequestBody @Validated UpdateEventUserRequest updateEventUserRequest) {
         log.info("Private. Обновление события. eventId = {}, userId = {}, request: {}",
                 eventId, userId, updateEventUserRequest);
         return null;
@@ -53,7 +55,7 @@ public class PrivateEventController {
 
     @PatchMapping("/{eventId}/requests")
     public EventRequestStatusUpdateResult updateStatus(@PathVariable long userId, @PathVariable long eventId,
-                                                       @RequestBody EventRequestStatusUpdateRequest updateRequest) {
+                                                       @RequestBody @Validated EventRequestStatusUpdateRequest updateRequest) {
         log.info("Private. Обновление статуса. eventId = {}, userId = {}, request: {}",
                 eventId, userId, updateRequest);
         return null;

@@ -2,6 +2,7 @@ package ru.practicum.compilation.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
 import ru.practicum.exceptions.NotFoundException;
 import ru.practicum.compilation.Compilation;
 import ru.practicum.compilation.CompilationMapper;
@@ -14,6 +15,7 @@ import ru.practicum.event.service.EventService;
 import java.util.List;
 
 @RequiredArgsConstructor
+@Service
 public class CompilationServiceImpl implements CompilationService {
     private final CompilationRepo compilationRepo;
     private final EventService eventService;
