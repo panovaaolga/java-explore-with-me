@@ -9,10 +9,10 @@ import java.util.Set;
 
 @Data
 public class CompilationDto {
-    @NotNull
+    @NotNull(message = "Класс: CompilationDto. Поле: id. Причина: NotNull")
     private Long id;
     private boolean pinned;
-    @NotBlank
+    @NotBlank(message = "Класс: CompilationDto. Поле: title. Причина: NotBlank")
     private String title;
     private Set<EventShortDto> events;
 }

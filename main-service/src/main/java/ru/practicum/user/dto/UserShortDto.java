@@ -9,8 +9,8 @@ import javax.validation.constraints.NotNull;
 @Data
 @AllArgsConstructor
 public class UserShortDto {
-    @NotNull
+    @NotNull(message = "Класс: UserShortDto. Поле: id. Причина: NotNull")
     private Long id;
-    @NotBlank
+    @NotBlank(message = "Класс: UserShortDto. Поле: name. Причина: NotBlank")
     private String name;
 }

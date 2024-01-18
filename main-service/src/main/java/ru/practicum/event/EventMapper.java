@@ -9,9 +9,12 @@ import ru.practicum.event.model.EventState;
 import ru.practicum.user.User;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class EventMapper {
     public static EventShortDto mapToShortEvent(Event event) {
+        EventShortDto eventShortDto = new EventShortDto();
         return null;
     }
 
@@ -37,5 +40,15 @@ public class EventMapper {
         event.setState(EventState.PENDING);
         event.setInitiator(initiator);
         return event;
+    }
+
+    public static List<EventShortDto> mapToShortEventList(List<Event> events) {
+        List<EventShortDto> shortEvents = new ArrayList<>();
+        if (!events.isEmpty()) {
+            for (Event e : events) {
+                shortEvents.add(mapToShortEvent(e));
+            }
+        }
+        return shortEvents;
     }
 }

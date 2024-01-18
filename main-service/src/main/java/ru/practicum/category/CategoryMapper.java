@@ -30,8 +30,10 @@ public class CategoryMapper {
 
     public static List<CategoryDto> mapToDtoList(List<Category> categories) {
         List<CategoryDto> categoryDtos = new ArrayList<>();
-        for (Category c : categories) {
-            categoryDtos.add(mapToCategoryDto(c));
+        if (!categories.isEmpty()) {
+            for (Category c : categories) {
+                categoryDtos.add(mapToCategoryDto(c));
+            }
         }
         return categoryDtos;
     }

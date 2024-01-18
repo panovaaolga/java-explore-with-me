@@ -7,7 +7,7 @@ import javax.validation.constraints.Size;
 
 @Data
 public class NewCategoryDto {
-    @NotBlank
-    @Size(min = 1, max = 50)
+    @NotBlank(message = "Класс: NewCategoryDto. Поле: name. Причина: NotBlank")
+    @Size(min = 1, max = 50, message = "Класс: NewCategoryDto. Поле: name. Причина: Size")
     private String name;
 }

@@ -3,6 +3,7 @@ package ru.practicum.compilation.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import ru.practicum.event.model.Event;
 import ru.practicum.exceptions.NotFoundException;
 import ru.practicum.compilation.Compilation;
 import ru.practicum.compilation.CompilationMapper;
@@ -12,6 +13,8 @@ import ru.practicum.compilation.dto.UpdateCompilationRequest;
 import ru.practicum.compilation.repository.CompilationRepo;
 import ru.practicum.event.service.EventService;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -39,9 +42,9 @@ public class CompilationServiceImpl implements CompilationService {
 
     @Override
     public CompilationDto createCompilation(NewCompilationDto newCompilationDto) {
-       // List<Event> events = eventService.getEvents() но тогда здесь будет передаваться не лист ивентов,
-        // а лист ивентДто, тк метод такой... Надо еще подумать
-        return null;
+       List<Event> events = eventService.getEventsById(new ArrayList<>(newCompilationDto.getEvents()));
+        return CompilationMapper.mapToDto(compilationRepo
+                .save(CompilationMapper.mapToCompilation(newCompilationDto, events)));
     }
 
     @Override
@@ -65,7 +68,8 @@ public class CompilationServiceImpl implements CompilationService {
             compilation.setTitle(updateCompilationRequest.getTitle());
         }
         if (updateCompilationRequest.getEvents() != null) {
-            //прописать маппинг айди ивентов в ивенты
+            compilation.setEvents(new HashSet<>(eventService
+                    .getEventsById(new ArrayList<>(updateCompilationRequest.getEvents()))));
         }
         return CompilationMapper.mapToDto(compilationRepo.save(compilation));
     }

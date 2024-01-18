@@ -7,10 +7,10 @@ import javax.validation.constraints.NotBlank;
 
 @Data
 public class UserDto {
-    @Email
-    @NotBlank
+    @Email(message = "Класс: UserDto. Поле: email. Причина: Email")
+    @NotBlank(message = "Класс: UserDto. Поле: email. Причина: NotBlank")
     private String email;
     private Long id;
-    @NotBlank
+    @NotBlank(message = "Класс: UserDto. Поле: name. Причина: NotBlank")
     private String name;
 }

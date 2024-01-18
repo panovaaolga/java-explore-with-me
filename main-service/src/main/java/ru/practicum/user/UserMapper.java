@@ -30,8 +30,10 @@ public class UserMapper {
 
     public static List<UserDto> mapToDtoList(List<User> users) {
         List<UserDto> userDtos = new ArrayList<>();
-        for (User u : users) {
-            userDtos.add(mapToUserDto(u));
+        if (!users.isEmpty()) {
+            for (User u : users) {
+                userDtos.add(mapToUserDto(u));
+            }
         }
         return userDtos;
     }

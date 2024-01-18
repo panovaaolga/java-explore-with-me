@@ -12,6 +12,7 @@ import ru.practicum.category.dto.NewCategoryDto;
 import ru.practicum.category.repository.CategoryRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -25,7 +26,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public CategoryDto getCategoryById(long catId) {
+    public CategoryDto getCategoryDtoById(long catId) {
         return CategoryMapper.mapToCategoryDto(categoryRepository.findById(catId)
                 .orElseThrow(() -> new NotFoundException(Category.class.getName(), catId)));
     }
@@ -53,5 +54,9 @@ public class CategoryServiceImpl implements CategoryService {
             category.setName(categoryDto.getName());
         }
         return CategoryMapper.mapToCategoryDto(categoryRepository.save(category));
+    }
+
+    public Optional<Category> getCategoryById(long catId) {
+        return categoryRepository.findById(catId);
     }
 }

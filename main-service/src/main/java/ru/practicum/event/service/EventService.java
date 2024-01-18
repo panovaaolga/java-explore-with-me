@@ -1,6 +1,7 @@
 package ru.practicum.event.service;
 
 import ru.practicum.event.dto.*;
+import ru.practicum.event.model.Event;
 import ru.practicum.event.model.SortOption;
 
 import java.util.List;
@@ -29,5 +30,5 @@ public interface EventService {
 
     EventRequestStatusUpdateResult updateStatus(long userId, long eventId, EventRequestStatusUpdateRequest updateRequest);
 
-
+    List<Event> getEventsById(List<Long> ids);
 }

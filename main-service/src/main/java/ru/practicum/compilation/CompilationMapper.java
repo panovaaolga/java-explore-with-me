@@ -17,7 +17,7 @@ public class CompilationMapper {
         Compilation compilation = new Compilation();
         compilation.setPinned(newCompilationDto.isPinned());
         compilation.setTitle(newCompilationDto.getTitle());
-       // compilation.setEvents(events);
+        compilation.setEvents(new HashSet<>(events));
         return compilation;
     }
 
@@ -36,8 +36,10 @@ public class CompilationMapper {
 
     public static List<CompilationDto> mapToDtoList(List<Compilation> compilations) {
         List<CompilationDto> compilationDtos = new ArrayList<>();
-        for (Compilation c : compilations) {
-            compilationDtos.add(mapToDto(c));
+        if (!compilations.isEmpty()) {
+            for (Compilation c : compilations) {
+                compilationDtos.add(mapToDto(c));
+            }
         }
         return compilationDtos;
     }
