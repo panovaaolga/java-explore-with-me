@@ -52,7 +52,8 @@ public class Event {
     @Column
     private String title;
     @Column
-    private long views; //как обновлять статистику?? Каждый раз после просмотра?
+    private long views; //как обновлять статистику?? Каждый раз после просмотра? Нам это здесь не надо вообще, кажется
+    //Для дто можно подтягивать вызов статс клиент с получением статистики по запросу
     @JoinTable
     @ManyToMany
     private Set<Compilation> compilations; //дописать

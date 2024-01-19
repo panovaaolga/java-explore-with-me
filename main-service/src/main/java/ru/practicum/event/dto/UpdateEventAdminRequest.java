@@ -2,6 +2,7 @@ package ru.practicum.event.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+import org.springframework.lang.Nullable;
 import ru.practicum.event.model.Location;
 import ru.practicum.event.model.StateActionAdmin;
 
@@ -21,6 +22,7 @@ public class UpdateEventAdminRequest {
     private Boolean paid;
     private Integer participantLimit;
     private Boolean requestModeration;
+    @Nullable
     private StateActionAdmin stateAction;
     @Size(min = 3, max = 120)
     private String title;

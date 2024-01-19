@@ -15,13 +15,14 @@ import java.util.List;
 public class EventMapper {
     public static EventShortDto mapToShortEvent(Event event) {
         EventShortDto eventShortDto = new EventShortDto();
+        //добавить в конструктор stats для views
         return null;
     }
 
     public static EventFullDto mapToFullEvent(Event event) {
         EventFullDto eventFullDto = new EventFullDto();
         eventFullDto.setAnnotation(event.getAnnotation());
-
+        //добавить в конструктор stats для views
         return null;
     }
 
@@ -48,6 +49,7 @@ public class EventMapper {
             for (Event e : events) {
                 shortEvents.add(mapToShortEvent(e));
             }
+            //добавить в конструктор Map<Long(eventId),stats> для views
         }
         return shortEvents;
     }

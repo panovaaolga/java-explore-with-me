@@ -11,10 +11,7 @@ import ru.practicum.dto.EndpointHitDto;
 import ru.practicum.event.EventMapper;
 import ru.practicum.event.ParticipationRequestMapper;
 import ru.practicum.event.dto.*;
-import ru.practicum.event.model.Event;
-import ru.practicum.event.model.EventState;
-import ru.practicum.event.model.ParticipationRequest;
-import ru.practicum.event.model.SortOption;
+import ru.practicum.event.model.*;
 import ru.practicum.event.repository.EventRepository;
 import ru.practicum.event.repository.ParticipationRepository;
 import ru.practicum.exceptions.ForbiddenEventConditionException;
@@ -62,10 +59,53 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    @Transactional
     public EventFullDto updateEventAdmin(long eventId, UpdateEventAdminRequest updateEventAdminRequest) {
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new NotFoundException(Event.class.getName(), eventId));
+        if (updateEventAdminRequest.getStateAction() != null) {
+            if (!event.getState().equals(EventState.PENDING)) {
+                String action = "";
+                switch (updateEventAdminRequest.getStateAction()) {
+                    case PUBLISH_EVENT:
+                        action = "Опубликовать";
+                        break;
+                    case REJECT_EVENT:
+                        action = "Отклонить";
+                        break;
+                }
+                throw new ForbiddenEventConditionException(action + " можно только события со статусом PENDING");
+            }
+
+            switch (updateEventAdminRequest.getStateAction()) {
+                case REJECT_EVENT:
+                    event.setState(EventState.CANCELED);
+                    break;
+                case PUBLISH_EVENT:
+                    event.setPublishedOn(LocalDateTime.now());
+                    event.setState(EventState.PUBLISHED);
+                    break;
+            }
+        }
+
+        //дата != null и событие уже было опубликовано
+        //дата != null и событие не опубликовано
+        //дата == Null и событие опубликовано - тогда выбрасывать ничего не надо, значит, изменяются другие значения
+        //дата == null и событие не опубликовано
+
+        if (updateEventAdminRequest.getEventDate() != null) {
+
+        } else {
+            if (event.getPublishedOn().plusHours(1).isAfter(event.getEventDate())) {
+                throw new ForbiddenEventConditionException("Нельзя опубликовать событие, " +
+                        "до которого осталось менее 1 часа");
+            }
+        }
+
+
+
         //дата события должна быть min на час больше, чем дата публикации - иначе 409
-        //изменить(отклон или опубл) можно только pending события - иначе 409
-        return null;
+        return EventMapper.mapToFullEvent(eventRepository.save(event));
     }
 
     @Override
@@ -109,8 +149,7 @@ public class EventServiceImpl implements EventService {
                         "до которого осталось менее 2-х часов");
             }
         }
-        if (updateEventUserRequest.getAnnotation() != null &&
-                !updateEventUserRequest.getAnnotation().equals(event.getAnnotation())) {
+        if (updateEventUserRequest.getAnnotation() != null) {
             event.setAnnotation(updateEventUserRequest.getAnnotation());
         }
         if (updateEventUserRequest.getCategory() != null) {
@@ -169,13 +208,70 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventRequestStatusUpdateResult updateStatus(long userId, long eventId,
                                                        EventRequestStatusUpdateRequest updateRequest) {
+        Event event = eventRepository.findByIdAndInitiatorId(eventId, userId)
+                .orElseThrow(() -> new NotFoundException(Event.class.getName(), eventId));
+        if (!event.isRequestModeration() || event.getParticipantLimit() == 0) {
+            throw new ForbiddenEventConditionException("Для события не требуется подтверждение заявок " +
+                    "или не установлен лимит участников");
+        }
+        List<ParticipationRequest> participants = participationRepository
+                .findByIdInOrderById(updateRequest.getRequestIds());
+        for (ParticipationRequest p : participants) {
+            if (!p.getStatus().equals(ParticipationStatus.PENDING)) {
+                throw new ForbiddenEventConditionException("Заявки должны находиться в статусе ожидания модерации");
+            }
+        }
 
-        //если для события лимит заявок равен 0 или отключена пре-модерация заявок, то подтверждение заявок не требуется
-        //нельзя подтвердить заявку, если уже достигнут лимит по заявкам на данное событие - 409
-        //статус можно изменить только у заявок, находящихся в состоянии ожидания - 409
-        //если при подтверждении данной заявки, лимит заявок для события исчерпан,
-        // то все неподтверждённые заявки необходимо отклонить
-        return null;
+        EventRequestStatusUpdateResult result = new EventRequestStatusUpdateResult();
+        switch (updateRequest.getStatus()) {
+            case CONFIRMED:
+                int limit = event.getParticipantLimit();
+                int participantsCount = participationRepository
+                        .countByEventIdAndStatus(eventId, ParticipationStatus.CONFIRMED);
+                if (limit == participantsCount) {
+                    throw new ForbiddenEventConditionException("Лимит доступных заявок для одобрения исчерпан");
+                }
+
+                if (participants.size() > limit - participantsCount) {
+                    for (int i = 0; i < participants.size(); i++) {
+                        ParticipationRequest participant = participants.get(i);
+                        if (limit - participantsCount > 0) {
+                            participant.setStatus(ParticipationStatus.CONFIRMED);
+                            participationRepository.save(participant);
+                            result.getConfirmedRequests().add(ParticipationRequestMapper.mapToDto(participant));
+                            participantsCount++;
+                        } else {
+                            participant.setStatus(ParticipationStatus.REJECTED);
+                            participationRepository.save(participant);
+                            result.getRejectedRequests().add(ParticipationRequestMapper.mapToDto(participant));
+                        }
+                    }
+                    List<ParticipationRequest> pendingParticipants = participationRepository
+                            .findByEventIdAndStatus(eventId, ParticipationStatus.PENDING);
+                    for (int i = 0; i < pendingParticipants.size(); i++) {
+                        ParticipationRequest participant = pendingParticipants.get(i);
+                        participant.setStatus(ParticipationStatus.REJECTED);
+                        participationRepository.save(participant);
+                        result.getRejectedRequests().add(ParticipationRequestMapper.mapToDto(participant));
+                    }
+                } else {
+                    for (int i = 0; i < participants.size(); i++) {
+                        ParticipationRequest participant = participants.get(i);
+                        participant.setStatus(ParticipationStatus.CONFIRMED);
+                        participationRepository.save(participant);
+                        result.getConfirmedRequests().add(ParticipationRequestMapper.mapToDto(participant));
+                    }
+                }
+                break;
+            case REJECTED:
+                for (ParticipationRequest p : participants) {
+                    p.setStatus(ParticipationStatus.REJECTED);
+                    participationRepository.save(p);
+                    result.getRejectedRequests().add(ParticipationRequestMapper.mapToDto(p));
+                }
+                break;
+        }
+        return result;
     }
 
     @Override

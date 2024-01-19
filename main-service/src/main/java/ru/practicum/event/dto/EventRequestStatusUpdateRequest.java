@@ -1,10 +1,12 @@
 package ru.practicum.event.dto;
 
+import lombok.Data;
 import ru.practicum.event.model.ParticipationStatus;
 
-import java.util.List;
+import java.util.Set;
 
+@Data
 public class EventRequestStatusUpdateRequest {
-    private List<Integer> requestIds;
+    private Set<Long> requestIds;
     private ParticipationStatus status;
 }
