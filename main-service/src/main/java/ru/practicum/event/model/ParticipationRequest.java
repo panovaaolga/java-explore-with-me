@@ -20,9 +20,12 @@ public class ParticipationRequest {
     @Column
     private LocalDateTime created;
     @JoinColumn(referencedColumnName = "event_id")
+    @ManyToOne
     private Event event;
     @JoinColumn(referencedColumnName = "user_id")
+    @ManyToOne
     private User requester;
     @Column
+    @Enumerated(EnumType.STRING)
     private ParticipationStatus status; //default = PENDING
 }

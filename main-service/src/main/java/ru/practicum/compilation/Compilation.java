@@ -23,7 +23,7 @@ public class Compilation {
     private boolean pinned;
     @Column(unique = true)
     private String title;
-    @JoinColumn(name = "event_id") //JoinTable?
+    @JoinTable
     @ManyToMany
     private Set<Event> events; //передаем полную сущность, которая связана с таблицей же?
 }

@@ -7,6 +7,7 @@ import ru.practicum.event.dto.NewEventDto;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.model.EventState;
 import ru.practicum.user.User;
+import ru.practicum.user.UserMapper;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -15,15 +16,37 @@ import java.util.List;
 public class EventMapper {
     public static EventShortDto mapToShortEvent(Event event) {
         EventShortDto eventShortDto = new EventShortDto();
-        //добавить в конструктор stats для views
-        return null;
+        eventShortDto.setAnnotation(event.getAnnotation());
+        eventShortDto.setCategory(CategoryMapper.mapToCategoryDto(event.getCategory()));
+        eventShortDto.setConfirmedRequests(event.getConfirmedRequests());
+        eventShortDto.setEventDate(event.getEventDate());
+        eventShortDto.setId(event.getId());
+        eventShortDto.setInitiator(UserMapper.mapToUserShort(event.getInitiator()));
+        eventShortDto.setPaid(event.isPaid());
+        eventShortDto.setTitle(event.getTitle());
+        //eventShortDto.setViews(views);
+        return eventShortDto;
     }
 
     public static EventFullDto mapToFullEvent(Event event) {
         EventFullDto eventFullDto = new EventFullDto();
         eventFullDto.setAnnotation(event.getAnnotation());
-        //добавить в конструктор stats для views
-        return null;
+        eventFullDto.setCategory(CategoryMapper.mapToCategoryDto(event.getCategory()));
+        eventFullDto.setConfirmedRequests(event.getConfirmedRequests());
+        eventFullDto.setCreatedOn(event.getCreatedOn());
+        eventFullDto.setDescription(event.getDescription());
+        eventFullDto.setEventDate(event.getEventDate());
+        eventFullDto.setId(event.getId());
+        eventFullDto.setInitiator(UserMapper.mapToUserShort(event.getInitiator()));
+        eventFullDto.setLocation(event.getLocation());
+        eventFullDto.setPaid(event.isPaid());
+        eventFullDto.setParticipantLimit(event.getParticipantLimit());
+        eventFullDto.setPublishedOn(event.getPublishedOn());
+        eventFullDto.setRequestModeration(event.isRequestModeration());
+        eventFullDto.setState(event.getState());
+        eventFullDto.setTitle(event.getTitle());
+       // eventFullDto.setViews(views);
+        return eventFullDto;
     }
 
     public static Event mapToEvent(NewEventDto newEventDto, User initiator) {

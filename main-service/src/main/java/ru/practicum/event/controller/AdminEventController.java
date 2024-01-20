@@ -14,7 +14,7 @@ import java.util.List;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping(path = "/admin/events", consumes = "application/json", produces = "application/json")
+@RequestMapping(path = "/admin/events")
 public class AdminEventController {
 
     @GetMapping

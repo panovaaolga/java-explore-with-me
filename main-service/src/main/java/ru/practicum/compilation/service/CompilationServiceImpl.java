@@ -27,7 +27,7 @@ public class CompilationServiceImpl implements CompilationService {
     public List<CompilationDto> getCompilations(Boolean pinned, int from, int size) {
         if (pinned == null) {
             return CompilationMapper.mapToDtoList(compilationRepo
-                    .findAllOrderById(PageRequest.of(from / size, size)).getContent());
+                    .findAll(PageRequest.of(from / size, size)).getContent());
         } else {
            return CompilationMapper.mapToDtoList(compilationRepo
                    .findByPinnedOrderById(pinned, PageRequest.of(from / size, size)).getContent());
@@ -42,7 +42,12 @@ public class CompilationServiceImpl implements CompilationService {
 
     @Override
     public CompilationDto createCompilation(NewCompilationDto newCompilationDto) {
-       List<Event> events = eventService.getEventsById(new ArrayList<>(newCompilationDto.getEvents()));
+        if (newCompilationDto.getEvents() == null) {
+            return CompilationMapper.mapToDto(compilationRepo
+                    .save(CompilationMapper.mapToCompilation(newCompilationDto, new ArrayList<>())));
+        }
+
+        List<Event> events = eventService.getEventsById(new ArrayList<>(newCompilationDto.getEvents()));
         return CompilationMapper.mapToDto(compilationRepo
                 .save(CompilationMapper.mapToCompilation(newCompilationDto, events)));
     }

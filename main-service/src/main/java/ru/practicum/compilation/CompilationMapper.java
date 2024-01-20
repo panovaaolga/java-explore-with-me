@@ -1,6 +1,5 @@
 package ru.practicum.compilation;
 
-import ru.practicum.category.Category;
 import ru.practicum.compilation.dto.CompilationDto;
 import ru.practicum.compilation.dto.NewCompilationDto;
 import ru.practicum.event.EventMapper;
@@ -27,8 +26,10 @@ public class CompilationMapper {
         compilationDto.setId(compilation.getId());
         compilationDto.setPinned(compilation.isPinned());
         compilationDto.setTitle(compilationDto.getTitle());
-        for (Event e : compilation.getEvents()) {
-            eventsShort.add(EventMapper.mapToShortEvent(e));
+        if (!compilation.getEvents().isEmpty()) {
+            for (Event e : compilation.getEvents()) {
+                eventsShort.add(EventMapper.mapToShortEvent(e));
+            }
         }
         compilationDto.setEvents(eventsShort);
         return compilationDto;

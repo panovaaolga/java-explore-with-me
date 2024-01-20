@@ -11,7 +11,7 @@ import ru.practicum.compilation.dto.UpdateCompilationRequest;
 import ru.practicum.compilation.service.CompilationService;
 
 @RestController
-@RequestMapping(path = "/admin/compilations", consumes = "application/json", produces = "application/json")
+@RequestMapping(path = "/admin/compilations")
 @Slf4j
 @RequiredArgsConstructor
 public class AdminCompilationController {

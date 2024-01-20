@@ -13,7 +13,7 @@ import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "/events", consumes = "application/json", produces = "application/json")
+@RequestMapping(path = "/events")
 @RequiredArgsConstructor
 @Slf4j
 public class PublicEventController {

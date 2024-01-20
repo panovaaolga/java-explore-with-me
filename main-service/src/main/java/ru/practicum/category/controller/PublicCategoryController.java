@@ -11,7 +11,7 @@ import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "/categories", consumes = "application/json", produces = "application/json")
+@RequestMapping(path = "/categories")
 @RequiredArgsConstructor
 @Slf4j
 public class PublicCategoryController {

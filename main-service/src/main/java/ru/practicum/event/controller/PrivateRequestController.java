@@ -12,7 +12,7 @@ import java.util.List;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping(path = "users/{userId}/requests", consumes = "application/json", produces = "application/json")
+@RequestMapping(path = "users/{userId}/requests")
 public class PrivateRequestController {
 
     @GetMapping

@@ -22,7 +22,7 @@ public class UserServiceImpl implements UserService {
     public List<UserDto> getUsers(List<Long> ids, int from, int size) {
         if (ids == null) {
             return UserMapper.mapToDtoList(userRepository
-                    .findAllOrderById(PageRequest.of(from / size, size)).getContent());
+                    .findAll(PageRequest.of(from / size, size)).getContent());
         } else {
             return UserMapper.mapToDtoList(userRepository
                     .findByIdInOrderById(ids, PageRequest.of(from / size, size)).getContent());

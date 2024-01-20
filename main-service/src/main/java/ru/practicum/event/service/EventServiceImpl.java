@@ -7,7 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.category.Category;
 import ru.practicum.category.service.CategoryService;
 import ru.practicum.client.StatsClient;
-import ru.practicum.dto.EndpointHitDto;
 import ru.practicum.event.EventMapper;
 import ru.practicum.event.ParticipationRequestMapper;
 import ru.practicum.event.dto.*;
@@ -28,7 +27,7 @@ public class EventServiceImpl implements EventService {
     private final EventRepository eventRepository;
     private final UserService userService;
     private final CategoryService categoryService;
-    private final StatsClient statsClient;
+   // private final StatsClient statsClient;
     private final ParticipationRepository participationRepository;
 
 
@@ -201,7 +200,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public List<ParticipationRequestDto> getRequests(long userId, long eventId) {
         List<ParticipationRequest> participationRequests = participationRepository
-                .findByEventIdAndInitiatorId(eventId, userId);
+                .findByEventIdAndEventInitiatorId(eventId, userId);
         return ParticipationRequestMapper.mapToDtoList(participationRequests);
     }
 
@@ -226,26 +225,26 @@ public class EventServiceImpl implements EventService {
         switch (updateRequest.getStatus()) {
             case CONFIRMED:
                 int limit = event.getParticipantLimit();
-                int participantsCount = participationRepository
-                        .countByEventIdAndStatus(eventId, ParticipationStatus.CONFIRMED);
-                if (limit == participantsCount) {
+                int confirmedRequests = event.getConfirmedRequests();
+                if (limit == confirmedRequests) {
                     throw new ForbiddenEventConditionException("Лимит доступных заявок для одобрения исчерпан");
                 }
 
-                if (participants.size() > limit - participantsCount) {
+                if (participants.size() > limit - confirmedRequests) {
                     for (int i = 0; i < participants.size(); i++) {
                         ParticipationRequest participant = participants.get(i);
-                        if (limit - participantsCount > 0) {
+                        if (limit - confirmedRequests > 0) {
                             participant.setStatus(ParticipationStatus.CONFIRMED);
                             participationRepository.save(participant);
                             result.getConfirmedRequests().add(ParticipationRequestMapper.mapToDto(participant));
-                            participantsCount++;
+                            confirmedRequests++;
                         } else {
                             participant.setStatus(ParticipationStatus.REJECTED);
                             participationRepository.save(participant);
                             result.getRejectedRequests().add(ParticipationRequestMapper.mapToDto(participant));
                         }
                     }
+
                     List<ParticipationRequest> pendingParticipants = participationRepository
                             .findByEventIdAndStatus(eventId, ParticipationStatus.PENDING);
                     for (int i = 0; i < pendingParticipants.size(); i++) {
@@ -259,9 +258,12 @@ public class EventServiceImpl implements EventService {
                         ParticipationRequest participant = participants.get(i);
                         participant.setStatus(ParticipationStatus.CONFIRMED);
                         participationRepository.save(participant);
+                        confirmedRequests++;
                         result.getConfirmedRequests().add(ParticipationRequestMapper.mapToDto(participant));
                     }
                 }
+                event.setConfirmedRequests(confirmedRequests);
+                eventRepository.save(event);
                 break;
             case REJECTED:
                 for (ParticipationRequest p : participants) {
@@ -276,6 +278,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public List<Event> getEventsById(List<Long> ids) {
+
         return eventRepository.findByIdIn(ids);
     }
 }

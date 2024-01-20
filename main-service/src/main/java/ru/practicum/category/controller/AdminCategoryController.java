@@ -10,7 +10,7 @@ import ru.practicum.category.dto.NewCategoryDto;
 import ru.practicum.category.service.CategoryService;
 
 @RestController
-@RequestMapping(path = "/admin/categories", consumes = "application/json", produces = "application/json")
+@RequestMapping(path = "/admin/categories")
 @RequiredArgsConstructor
 @Slf4j
 public class AdminCategoryController {

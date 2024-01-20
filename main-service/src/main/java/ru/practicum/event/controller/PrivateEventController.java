@@ -14,7 +14,7 @@ import java.util.List;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping(path = "/users/{userId}/events", consumes = "application/json", produces = "application/json")
+@RequestMapping(path = "/users/{userId}/events")
 public class PrivateEventController {
 
     @GetMapping
