@@ -1,16 +1,19 @@
 package ru.practicum.event.model;
 
+import lombok.Data;
+import ru.practicum.event.dto.LocationId;
+
 import javax.persistence.*;
-import java.io.Serializable;
 
 @Entity
 @Table(name = "locations")
-@IdClass(Location.class)
-public class Location implements Serializable {
+@IdClass(LocationId.class)
+@Data
+public class Location {
     @Id
-    @Column
-    private String lat;
+    @Column(name = "lat")
+    private double lat;
     @Id
-    @Column
-    private String lon;
+    @Column(name = "lon")
+    private double lon;
 }

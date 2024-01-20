@@ -118,7 +118,9 @@ public class EventServiceImpl implements EventService {
     public EventFullDto createEvent(long userId, NewEventDto newEventDto) {
         if (LocalDateTime.now().plusHours(2).isBefore(newEventDto.getEventDate())) {
             User initiator = userService.getUserById(userId);
-            return EventMapper.mapToFullEvent(eventRepository.save(EventMapper.mapToEvent(newEventDto, initiator)));
+            Category category = categoryService.getCategoryById(newEventDto.getCategory());
+            return EventMapper.mapToFullEvent(eventRepository
+                    .save(EventMapper.mapToEvent(newEventDto, initiator, category)));
         }
         throw new ForbiddenEventConditionException("До события не может быть менее 2-х часов");
     }
@@ -152,9 +154,7 @@ public class EventServiceImpl implements EventService {
             event.setAnnotation(updateEventUserRequest.getAnnotation());
         }
         if (updateEventUserRequest.getCategory() != null) {
-            Category category = categoryService.getCategoryById(updateEventUserRequest.getCategory())
-                    .orElseThrow(() -> new ForbiddenEventConditionException("Не существует категории с id = " +
-                            updateEventUserRequest.getCategory()));
+            Category category = categoryService.getCategoryById(updateEventUserRequest.getCategory());
             event.setCategory(category);
         }
         if (updateEventUserRequest.getDescription() != null) {

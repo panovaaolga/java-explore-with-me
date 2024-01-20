@@ -56,7 +56,8 @@ public class CategoryServiceImpl implements CategoryService {
         return CategoryMapper.mapToCategoryDto(categoryRepository.save(category));
     }
 
-    public Optional<Category> getCategoryById(long catId) {
-        return categoryRepository.findById(catId);
+    public Category getCategoryById(long catId) {
+        return categoryRepository.findById(catId).orElseThrow(() ->
+                new NotFoundException(Category.class.getName(), catId));
     }
 }

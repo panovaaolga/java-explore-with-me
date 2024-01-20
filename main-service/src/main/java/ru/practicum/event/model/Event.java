@@ -1,35 +1,37 @@
 package ru.practicum.event.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 import ru.practicum.category.Category;
 import ru.practicum.compilation.Compilation;
 import ru.practicum.user.User;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
 @Table(name = "events")
-@Getter
-@Setter
+@Data
 public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "event_id")
     private Long id;
-    @Column
+    @Column(length = 2000)
     private String annotation;
-    @JoinColumn(referencedColumnName = "category_id")
+    @JoinColumn(name = "category_id")
     @ManyToOne
     private Category category;
     @Column(name = "confirmed_requests")
     private int confirmedRequests;
     @Column(name = "created")
     private LocalDateTime createdOn;
-    @Column
+    @Column(length = 7000)
     private String description;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name = "event_date")
@@ -37,10 +39,10 @@ public class Event {
     @JoinColumn(referencedColumnName = "user_id", name = "initiator_id")
     @ManyToOne
     private User initiator;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumns({
-            @JoinColumn(name = "location_lat", referencedColumnName = "lat"),
-            @JoinColumn(name = "location_lon", referencedColumnName = "lon")
+            @JoinColumn(name = "lat", referencedColumnName = "lat"),
+            @JoinColumn(name = "lon", referencedColumnName = "lon")
     })
     private Location location;
     @Column
@@ -55,7 +57,7 @@ public class Event {
     @Column
     @Enumerated(EnumType.STRING)
     private EventState state;
-    @Column
+    @Column(length = 120)
     private String title;
     @Column
     private long views; //как обновлять статистику?? Каждый раз после просмотра? Нам это здесь не надо вообще, кажется

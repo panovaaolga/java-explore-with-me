@@ -23,8 +23,8 @@ CREATE table IF NOT EXISTS public.categories (
 );
 
 CREATE TABLE IF NOT EXISTS public.locations (
-	lat varchar NOT NULL,
-	lon varchar NOT NULL,
+	lat float NOT NULL,
+	lon float NOT NULL,
 	CONSTRAINT locations_pk PRIMARY KEY (lat,lon)
 );
 
@@ -51,13 +51,14 @@ CREATE TABLE IF NOT EXISTS public.events (
 	moderation boolean NOT NULL,
 	state varchar NOT NULL,
 	title varchar NOT NULL,
-	location_lat varchar NOT NULL,
-	location_lon varchar NOT NULL,
+	lat float NOT NULL,
+	lon float NOT NULL,
+	views bigint, --доделать
 	CONSTRAINT events_pk PRIMARY KEY (event_id),
 	CONSTRAINT events_un UNIQUE (title),
 	CONSTRAINT events_categories_fk FOREIGN KEY (category_id) REFERENCES public.categories(category_id),
 	CONSTRAINT events_users_fk FOREIGN KEY (initiator_id) REFERENCES public.users(user_id),
-	CONSTRAINT events_locations_fk FOREIGN KEY (location_lat, location_lon) REFERENCES public.locations(lat,lon)
+	CONSTRAINT events_locations_fk FOREIGN KEY (lat, lon) REFERENCES public.locations(lat,lon)
 );
 
 

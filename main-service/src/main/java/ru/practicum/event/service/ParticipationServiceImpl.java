@@ -32,6 +32,7 @@ public class ParticipationServiceImpl implements ParticipationService {
     }
 
     @Override
+    @Transactional
     public ParticipationRequestDto createRequest(long userId, long eventId) {
         if (participationRepository.findByRequesterIdAndEventId(userId, eventId).isPresent()) {
             throw new ForbiddenEventConditionException("Повторно подать заявку на участие невозможно");

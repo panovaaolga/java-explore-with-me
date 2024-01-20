@@ -1,5 +1,7 @@
 package ru.practicum.event;
 
+import lombok.extern.slf4j.Slf4j;
+import ru.practicum.category.Category;
 import ru.practicum.category.CategoryMapper;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.EventShortDto;
@@ -13,6 +15,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 public class EventMapper {
     public static EventShortDto mapToShortEvent(Event event) {
         EventShortDto eventShortDto = new EventShortDto();
@@ -49,20 +52,26 @@ public class EventMapper {
         return eventFullDto;
     }
 
-    public static Event mapToEvent(NewEventDto newEventDto, User initiator) {
+    public static Event mapToEvent(NewEventDto newEventDto, User initiator, Category category) {
         Event event = new Event();
         event.setCreatedOn(LocalDateTime.now());
         event.setAnnotation(newEventDto.getAnnotation());
-        event.setCategory(CategoryMapper.mapToCategory(newEventDto.getCategory()));
+        event.setCategory(category);
         event.setDescription(newEventDto.getDescription());
         event.setEventDate(newEventDto.getEventDate());
         event.setLocation(newEventDto.getLocation());
         event.setPaid(newEventDto.isPaid());
         event.setParticipantLimit(newEventDto.getParticipantLimit());
-        event.setRequestModeration(newEventDto.isRequestModeration());
+        if (newEventDto.getRequestModeration() == null) {
+            event.setRequestModeration(true);
+        } else {
+            event.setRequestModeration(newEventDto.getRequestModeration());
+        }
         event.setTitle(newEventDto.getTitle());
         event.setState(EventState.PENDING);
         event.setInitiator(initiator);
+        event.setViews(0); //доделать
+        log.info("event: {}", event);
         return event;
     }
 
