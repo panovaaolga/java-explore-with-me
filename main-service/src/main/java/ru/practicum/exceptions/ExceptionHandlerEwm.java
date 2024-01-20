@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import javax.validation.ValidationException;
+import java.sql.SQLException;
 
 @RestControllerAdvice
 @Slf4j
@@ -36,15 +37,15 @@ public class ExceptionHandlerEwm {
         return new ResponseEntity<Object>(error, HttpStatus.CONFLICT);
     }
 
-//    @ExceptionHandler(ConstraintViolationException.class)
-//    @ResponseStatus(HttpStatus.CONFLICT)
-//    public ResponseEntity<Object> handleForbiddenConditions(Exception ex) {
-//        ApiError error = new ApiError();
-//        error.setMessage(ex.getMessage());
-//        error.setReason("Нарушены ограничения при обновлении данных в БД");
-//        error.setStatus(HttpStatus.CONFLICT);
-//        return new ResponseEntity<Object>(error, HttpStatus.CONFLICT);
-//    }
+    @ExceptionHandler({ConstraintViolationException.class, SQLException.class})
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ResponseEntity<Object> handleForbiddenConditions(Exception ex) {
+        ApiError error = new ApiError();
+        error.setMessage(ex.getMessage());
+        error.setReason("Нарушены ограничения при обновлении данных в БД");
+        error.setStatus(HttpStatus.CONFLICT);
+        return new ResponseEntity<Object>(error, HttpStatus.CONFLICT);
+    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)

@@ -22,7 +22,7 @@ public class Event {
     private Long id;
     @Column
     private String annotation;
-    @JoinColumn
+    @JoinColumn(referencedColumnName = "category_id")
     @ManyToOne
     private Category category;
     @Column(name = "confirmed_requests")
@@ -60,7 +60,8 @@ public class Event {
     @Column
     private long views; //как обновлять статистику?? Каждый раз после просмотра? Нам это здесь не надо вообще, кажется
     //Для дто можно подтягивать вызов статс клиент с получением статистики по запросу
-    @JoinTable
+    @JoinTable(name = "compilations_events", joinColumns = @JoinColumn(name = "event_id"),
+            inverseJoinColumns = @JoinColumn(name = "compilation_id"))
     @ManyToMany
-    private Set<Compilation> compilations; //дописать
+    private Set<Compilation> compilations;
 }

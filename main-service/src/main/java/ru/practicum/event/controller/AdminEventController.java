@@ -6,6 +6,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.UpdateEventAdminRequest;
+import ru.practicum.event.service.EventService;
 
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
@@ -16,24 +17,25 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping(path = "/admin/events")
 public class AdminEventController {
+    private final EventService eventService;
 
     @GetMapping
-    public List<EventFullDto> getEventsAdmin(@RequestParam List<Long> users,
-                                        @RequestParam List<String> states,
-                                        @RequestParam List<Long> categories,
-                                        @RequestParam String rangeStart,
-                                        @RequestParam String rangeEnd,
+    public List<EventFullDto> getEventsAdmin(@RequestParam(required = false) List<Long> users,
+                                        @RequestParam(required = false) List<String> states,
+                                        @RequestParam(required = false) List<Long> categories,
+                                        @RequestParam(required = false) String rangeStart,
+                                        @RequestParam(required = false) String rangeEnd,
                                         @PositiveOrZero @RequestParam(defaultValue = "0") int from,
                                         @Positive @RequestParam(defaultValue = "10") int size) {
         log.info("Admin. Получение событий. users = {}, states = {}, categories = {}, start = {}, end = {}",
                 users, states, categories, rangeStart, rangeEnd);
-        return null;
+        return eventService.getEventsAdmin(users, states, categories, rangeStart, rangeEnd, from, size);
     }
 
     @PatchMapping("/{eventId}")
     public EventFullDto updateEventAdmin(@PathVariable long eventId,
                                     @RequestBody UpdateEventAdminRequest updateEventAdminRequest) {
         log.info("Admin. Обновление события. eventId = {}, request = {}", eventId, updateEventAdminRequest);
-        return null;
+        return eventService.updateEventAdmin(eventId, updateEventAdminRequest);
     }
 }

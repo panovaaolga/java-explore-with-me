@@ -2,7 +2,6 @@ package ru.practicum.event.model;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.boot.context.properties.bind.DefaultValue;
 import ru.practicum.user.User;
 
 import javax.persistence.*;
@@ -27,5 +26,5 @@ public class ParticipationRequest {
     private User requester;
     @Column
     @Enumerated(EnumType.STRING)
-    private ParticipationStatus status; //default = PENDING
+    private ParticipationStatus status;
 }

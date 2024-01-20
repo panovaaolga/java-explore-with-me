@@ -281,4 +281,10 @@ public class EventServiceImpl implements EventService {
 
         return eventRepository.findByIdIn(ids);
     }
+
+    @Override
+    public Event getEventById(long eventId) {
+        return eventRepository.findById(eventId).orElseThrow(() ->
+                new NotFoundException(Event.class.getName(), eventId));
+    }
 }

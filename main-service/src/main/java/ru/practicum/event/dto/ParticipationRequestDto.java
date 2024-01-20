@@ -13,5 +13,5 @@ public class ParticipationRequestDto {
     private Long event;
     private Long id;
     private Long requester;
-    private ParticipationStatus status; //default = PENDING
+    private ParticipationStatus status;
 }

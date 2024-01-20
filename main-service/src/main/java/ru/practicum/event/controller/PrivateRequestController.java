@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.event.dto.ParticipationRequestDto;
+import ru.practicum.event.service.ParticipationService;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -15,23 +16,25 @@ import java.util.List;
 @RequestMapping(path = "users/{userId}/requests")
 public class PrivateRequestController {
 
+    private final ParticipationService participationService;
+
     @GetMapping
     public List<ParticipationRequestDto> getRequests(@PathVariable long userId) {
         log.info("Private Request. Получение запроса. userId = {}", userId);
-        return null;
+        return participationService.getRequests(userId);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ParticipationRequestDto createRequest(@PathVariable long userId,
-                                                 @NotNull @RequestParam long eventId) {
+                                                 @RequestParam long eventId) {
         log.info("Private Request. Создание запроса. userId = {}, eventId = {}", userId, eventId);
-        return null;
+        return participationService.createRequest(userId, eventId);
     }
 
     @PatchMapping("/{requestId}/cancel")
     public ParticipationRequestDto cancelRequest(@PathVariable long userId, @PathVariable long requestId) {
         log.info("Private Request. Отмена запроса. userId = {}, requestId = {}", userId, requestId);
-        return null;
+        return participationService.cancelRequest(userId, requestId);
     }
 }
