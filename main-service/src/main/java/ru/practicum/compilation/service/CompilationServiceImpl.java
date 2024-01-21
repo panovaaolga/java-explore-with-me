@@ -17,6 +17,7 @@ import ru.practicum.event.service.EventService;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @RequiredArgsConstructor
 @Service
@@ -27,20 +28,34 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     @Transactional(readOnly = true)
     public List<CompilationDto> getCompilations(Boolean pinned, int from, int size) {
+        List<CompilationDto> compilationDtos = new ArrayList<>();
         if (pinned == null) {
-            return CompilationMapper.mapToDtoList(compilationRepo
-                    .findAll(PageRequest.of(from / size, size)).getContent());
+            if (!compilationRepo
+                    .findAll(PageRequest.of(from / size, size)).getContent().isEmpty()) {
+                for (Compilation c: compilationRepo
+                             .findAll(PageRequest.of(from / size, size)).getContent()) {
+                    compilationDtos.add(CompilationMapper.mapToDto(c, eventService.getShortDtoSet(c.getEvents())));
+                }
+            }
         } else {
-           return CompilationMapper.mapToDtoList(compilationRepo
-                   .findByPinned(pinned, PageRequest.of(from / size, size)).getContent());
+            if (!compilationRepo
+                    .findByPinned(pinned, PageRequest.of(from / size, size)).getContent().isEmpty()) {
+                for (Compilation c : compilationRepo
+                        .findByPinned(pinned, PageRequest.of(from / size, size)).getContent()) {
+                    compilationDtos.add(CompilationMapper.mapToDto(c, eventService.getShortDtoSet(c.getEvents())));
+                }
+            }
         }
+        return compilationDtos;
     }
 
     @Override
     @Transactional(readOnly = true)
     public CompilationDto getCompilationById(long compId) {
-        return CompilationMapper.mapToDto(compilationRepo.findById(compId)
-                .orElseThrow(() -> new NotFoundException(Compilation.class.getName(), compId)));
+        Compilation compilation = compilationRepo.findById(compId)
+                .orElseThrow(() -> new NotFoundException(Compilation.class.getName(), compId));
+        Set<Event> eventSet = compilation.getEvents();
+        return CompilationMapper.mapToDto(compilation, eventService.getShortDtoSet(eventSet));
     }
 
     @Override
@@ -48,20 +63,18 @@ public class CompilationServiceImpl implements CompilationService {
     public CompilationDto createCompilation(NewCompilationDto newCompilationDto) {
         if (newCompilationDto.getEvents() == null) {
             return CompilationMapper.mapToDto(compilationRepo
-                    .save(CompilationMapper.mapToCompilation(newCompilationDto, new ArrayList<>())));
+                    .save(CompilationMapper.mapToCompilation(newCompilationDto, new ArrayList<>())), new HashSet<>());
         }
 
         List<Event> events = eventService.getEventsById(new ArrayList<>(newCompilationDto.getEvents()));
         return CompilationMapper.mapToDto(compilationRepo
-                .save(CompilationMapper.mapToCompilation(newCompilationDto, events)));
+                .save(CompilationMapper.mapToCompilation(newCompilationDto, events)),
+                eventService.getShortDtoSet(new HashSet<>(events)));
     }
 
     @Override
     public void deleteCompilation(long compId) {
-        if (compilationRepo.existsById(compId)) {
-            compilationRepo.deleteById(compId);
-        }
-        throw new NotFoundException(Compilation.class.getName(), compId);
+        compilationRepo.deleteById(compId);
     }
 
     @Override
@@ -81,6 +94,7 @@ public class CompilationServiceImpl implements CompilationService {
             compilation.setEvents(new HashSet<>(eventService
                     .getEventsById(new ArrayList<>(updateCompilationRequest.getEvents()))));
         }
-        return CompilationMapper.mapToDto(compilationRepo.save(compilation));
+        return CompilationMapper.mapToDto(compilationRepo.save(compilation),
+                eventService.getShortDtoSet(compilation.getEvents()));
     }
 }

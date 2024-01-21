@@ -1,6 +1,5 @@
 package ru.practicum.client;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -56,6 +55,7 @@ public class StatsClient {
     }
 
     public EndpointHit addHit(EndpointHitDto endpointHitDto) {
+        log.info("Endpoint Hit Dto: {}", endpointHitDto);
         String urlTemplate = UriComponentsBuilder.fromHttpUrl(statsUrl + POST_PREFIX).toUriString();
         ResponseEntity<EndpointHit> response = restTemplate.postForEntity(urlTemplate, endpointHitDto,
                 EndpointHit.class);

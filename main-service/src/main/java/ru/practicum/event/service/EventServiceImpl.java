@@ -3,6 +3,7 @@ package ru.practicum.event.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.category.Category;
@@ -23,8 +24,8 @@ import ru.practicum.user.service.UserService;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -40,18 +41,38 @@ public class EventServiceImpl implements EventService {
 
 
     @Override
-    @Transactional(readOnly = true) //не готово
-    public List<EventShortDto> getEventsPublic(String text, List<Long> categories, Boolean paid, String rangeStart,
-                                               String rangeEnd, boolean onlyAvailable, SortOption sort, int from,
-                                               int size, String ipAddr, String uri) {
-        List<Event> events = new ArrayList<>();
+    @Transactional(readOnly = true)
+    public List<EventShortDto> getEventsPublic(String text, List<Long> categories, Boolean paid,
+                                               LocalDateTime rangeStart, LocalDateTime rangeEnd, Boolean onlyAvailable,
+                                               SortOption sort, int from, int size, String ipAddr, String uri) {
+        List<EventShortDto> eventShortDtoList = new ArrayList<>();
+        if (rangeStart == null && rangeEnd == null) {
+            rangeStart = LocalDateTime.now();
+        }
+        List<Event> events = eventRepository.findByAnnotationOrDescriptionContainingIgnoreCaseAndCategoryIdInAndPaidAndEventDateAfterAndEventDateBeforeAndState(text,
+                text, categories, paid, rangeStart, rangeEnd, EventState.PUBLISHED, PageRequest.of(from / size, size)).getContent();
 
-        //только опубликованные события
-        //поиск по тексту без регистра
-        //если start and end == null, то выгружаем события позже now()
-        //количество просмотров и одобренных заявок
-        //сохраняем в сервис статистики
-        return null;
+        log.info("events: {}", events);
+
+        //доделать onlyAvailable
+        EndpointHitDto endpointHitDto = addToStats(ipAddr, uri);
+        statsClient.addHit(endpointHitDto);
+        if (!events.isEmpty()) {
+            for (Event e : events) {
+                eventShortDtoList.add(EventMapper.mapToShortEvent(e, getViews(e)));
+            }
+            switch (sort) {
+                case VIEWS:
+                    eventShortDtoList = eventShortDtoList.stream().sorted((o1, o2) -> o2.getViews()
+                            .compareTo(o1.getViews())).collect(Collectors.toList());
+                    break;
+                case EVENT_DATE:
+                    eventShortDtoList = eventShortDtoList.stream().sorted((o1, o2) -> o2.getEventDate().compareTo(o1.getEventDate()))
+                            .collect(Collectors.toList());
+                    break;
+            }
+        }
+        return eventShortDtoList;
     }
 
     @Override
@@ -59,7 +80,7 @@ public class EventServiceImpl implements EventService {
     public EventFullDto getEventByIdPublic(long eventId, String ipAddr, String uri) {
         Event event = getEventById(eventId);
         if (!event.getState().equals(EventState.PUBLISHED)) {
-            throw new ForbiddenEventConditionException("Событие еще не опубликовано");
+            throw new NotFoundException(Event.class.getName(), eventId);
         }
         EndpointHitDto endpointHitDto = addToStats(ipAddr, uri);
         statsClient.addHit(endpointHitDto);
@@ -68,15 +89,22 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    @Transactional(readOnly = true) //не готово
-    public List<EventFullDto> getEventsAdmin(List<Long> users, List<String> states, List<Long> categories,
-                                             String rangeStart, String rangeEnd, int from, int size) {
-        //views добавить
-        return null;
+    @Transactional(readOnly = true)
+    public List<EventFullDto> getEventsAdmin(List<Long> users, List<EventState> states, List<Long> categories,
+                                             LocalDateTime rangeStart, LocalDateTime rangeEnd, int from, int size) {
+        List<EventFullDto> eventFullDtoList = new ArrayList<>();
+        List<Event> events = eventRepository.findByInitiatorIdInAndStateInAndCategoryIdInAndEventDateBetween(users,
+                states, categories, rangeStart, rangeEnd, PageRequest.of(from / size, size)).getContent();
+        if (!events.isEmpty()) {
+            for (Event e : events) {
+                eventFullDtoList.add(EventMapper.mapToFullEvent(e, getViews(e)));
+            }
+        }
+        return eventFullDtoList;
     }
 
     @Override
-    @Transactional //не готово
+    @Transactional
     public EventFullDto updateEventAdmin(long eventId, UpdateEventAdminRequest updateEventAdminRequest) {
         Event event = getEventById(eventId);
         if (updateEventAdminRequest.getStateAction() != null) {
@@ -156,15 +184,22 @@ public class EventServiceImpl implements EventService {
         return EventMapper.mapToFullEvent(eventRepository.save(event), getViews(event));
     }
 
-    @Override //views не сделано
+    @Override
+    @Transactional(readOnly = true)
     public List<EventShortDto> getEventsPrivate(long userId, int from, int size) {
-        //views добавить
-        return EventMapper.mapToShortEventList(eventRepository.findByInitiatorId(userId,
-                PageRequest.of(from / size, size)).getContent());
+        List<EventShortDto> eventShortDtoList = new ArrayList<>();
+        List<Event> events = eventRepository.findByInitiatorId(userId,
+                PageRequest.of(from / size, size)).getContent();
+        if (!events.isEmpty()) {
+            for (Event e : events) {
+                eventShortDtoList.add(EventMapper.mapToShortEvent(e, getViews(e)));
+            }
+        }
+        return eventShortDtoList;
     }
 
     @Override
-    @Transactional //views не сделано
+    @Transactional
     public EventFullDto createEvent(long userId, NewEventDto newEventDto) {
         if (LocalDateTime.now().plusHours(2).isBefore(newEventDto.getEventDate())) {
             User initiator = userService.getUserById(userId);
@@ -184,7 +219,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    @Transactional //views не сделано
+    @Transactional
     public EventFullDto updateEventPrivate(long userId, long eventId, UpdateEventUserRequest updateEventUserRequest) {
         Event event = eventRepository.findByIdAndInitiatorId(eventId, userId)
                 .orElseThrow(() -> new NotFoundException(Event.class.getName(), eventId));
@@ -252,11 +287,10 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    @Transactional(readOnly = true) //не готово views
+    @Transactional(readOnly = true)
     public List<ParticipationRequestDto> getRequests(long userId, long eventId) {
         List<ParticipationRequest> participationRequests = participationRepository
                 .findByEventIdAndEventInitiatorId(eventId, userId);
-        //views добавить
         return ParticipationRequestMapper.mapToDtoList(participationRequests);
     }
 
@@ -323,7 +357,6 @@ public class EventServiceImpl implements EventService {
                         result.getConfirmedRequests().add(ParticipationRequestMapper.mapToDto(participant));
                     }
                 }
-                log.info("confirmedRequests: {}", confirmedRequests);
                 event.setConfirmedRequests(confirmedRequests);
                 eventRepository.save(event);
                 break;
@@ -351,19 +384,34 @@ public class EventServiceImpl implements EventService {
                 new NotFoundException(Event.class.getName(), eventId));
     }
 
-    private long getViews(Event event) {
-        long views = 0;
-        List<ViewStats> viewStats = statsClient.getStats(event.getEventDate()
-                        .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
-                event.getEventDate()
-                        .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
-                new String[]{"/event", "/event/" + event.getId()}, false, 0, 10);
-        log.info("viewStats: {}", viewStats);
-        if (!viewStats.isEmpty()) {
-            for (ViewStats v : viewStats) {
-                views = views + v.getHits();
+    @Override
+    @Transactional(readOnly = true)
+    public Set<EventShortDto> getShortDtoSet(Set<Event> events) {
+        Set<EventShortDto> shortDtoSet = new HashSet<>();
+        if (!events.isEmpty()) {
+            for (Event e : events) {
+                shortDtoSet.add(EventMapper.mapToShortEvent(e, getViews(e)));
             }
         }
+        return shortDtoSet;
+    }
+
+    private long getViews(Event event) {
+        long views = 0;
+        if (event.getPublishedOn() != null) {
+            List<ViewStats> viewStats = statsClient.getStats(event.getPublishedOn()
+                            .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
+                    LocalDateTime.now()
+                            .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
+                    new String[]{"/events", "/events/" + event.getId()}, false, 0, 10);
+            log.info("viewStats: {}", viewStats);
+            if (!viewStats.isEmpty()) {
+                for (ViewStats v : viewStats) {
+                    views = views + v.getHits();
+                }
+            }
+        }
+        log.info("views to return: {}", views);
         return views;
     }
 

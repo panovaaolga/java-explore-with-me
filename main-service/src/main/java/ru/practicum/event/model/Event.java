@@ -3,6 +3,7 @@ package ru.practicum.event.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import ru.practicum.category.Category;
 import ru.practicum.compilation.Compilation;
 import ru.practicum.user.User;
@@ -15,6 +16,7 @@ import java.util.Set;
 @Table(name = "events")
 @Getter
 @Setter
+@ToString
 public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

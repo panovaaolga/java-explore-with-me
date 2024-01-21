@@ -12,8 +12,6 @@ import ru.practicum.user.User;
 import ru.practicum.user.UserMapper;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Slf4j
 public class EventMapper {
@@ -72,30 +70,5 @@ public class EventMapper {
         event.setInitiator(initiator);
         log.info("event: {}", event);
         return event;
-    }
-
-    public static List<EventShortDto> mapToShortEventList(List<Event> events) {
-        List<EventShortDto> shortEvents = new ArrayList<>();
-        if (!events.isEmpty()) {
-            for (Event e : events) {
-                shortEvents.add(mapToShortEvent(e));
-            }
-            //добавить в конструктор Map<Long(eventId),stats> для views
-        }
-        return shortEvents;
-    }
-
-    public static EventShortDto mapToShortEvent(Event event) {
-        EventShortDto eventShortDto = new EventShortDto();
-        eventShortDto.setAnnotation(event.getAnnotation());
-        eventShortDto.setCategory(CategoryMapper.mapToCategoryDto(event.getCategory()));
-        eventShortDto.setConfirmedRequests(event.getConfirmedRequests());
-        eventShortDto.setEventDate(event.getEventDate());
-        eventShortDto.setId(event.getId());
-        eventShortDto.setInitiator(UserMapper.mapToUserShort(event.getInitiator()));
-        eventShortDto.setPaid(event.isPaid());
-        eventShortDto.setTitle(event.getTitle());
-      //  eventShortDto.setViews(views);
-        return eventShortDto;
     }
 }
