@@ -8,6 +8,7 @@ import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.model.SortOption;
 import ru.practicum.event.service.EventService;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
@@ -28,16 +29,18 @@ public class PublicEventController {
                                                @RequestParam boolean onlyAvailable,
                                                @RequestParam SortOption sort,
                                                @PositiveOrZero @RequestParam(defaultValue = "0") int from,
-                                               @Positive @RequestParam(defaultValue = "10") int size) {
+                                               @Positive @RequestParam(defaultValue = "10") int size,
+                                               HttpServletRequest request) {
         log.info("Public. Получение событий. text = {}, categories = {}, paid = {}, start = {}, end = {}, " +
                 "onlyAvailable = {}, sort = {}", text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort);
         return null;
     }
 
     @GetMapping("/{eventId}")
-    public EventFullDto getEventByIdPublic(@PathVariable long eventId) {
-        log.info("Public. Получение события. eventId = {}", eventId);
-        return null;
+    public EventFullDto getEventByIdPublic(@PathVariable long eventId, HttpServletRequest request) {
+        log.info("Public. Получение события. eventId = {}, ip = {}, uri = {}", eventId, request.getRemoteAddr(),
+                request.getRequestURI());
+        return eventService.getEventByIdPublic(eventId, request.getRemoteAddr(), request.getRequestURI());
     }
 
 }

@@ -7,6 +7,7 @@ import ru.practicum.event.model.EventState;
 import ru.practicum.event.model.Location;
 import ru.practicum.user.dto.UserShortDto;
 
+import javax.validation.constraints.Future;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
@@ -23,6 +24,7 @@ public class EventFullDto {
     private String description;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @NotNull
+    @Future
     private LocalDateTime eventDate;
     private Long id;
     @NotNull
@@ -31,12 +33,12 @@ public class EventFullDto {
     private Location location;
     @NotNull
     private Boolean paid;
-    private Integer participantLimit; //default = 0
+    private Integer participantLimit;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime publishedOn;
-    private Boolean requestModeration; //default = true
+    private Boolean requestModeration;
     private EventState state;
     @NotBlank
     private String title;
-    private Long views;
+    private long views;
 }

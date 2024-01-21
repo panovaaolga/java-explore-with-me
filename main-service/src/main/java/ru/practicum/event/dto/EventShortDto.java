@@ -5,6 +5,7 @@ import lombok.Data;
 import ru.practicum.category.dto.CategoryDto;
 import ru.practicum.user.dto.UserShortDto;
 
+import javax.validation.constraints.Future;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
@@ -17,6 +18,7 @@ public class EventShortDto {
     private CategoryDto category;
     private int confirmedRequests;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @Future
     private LocalDateTime eventDate;
     private Long id;
     @NotNull
@@ -25,5 +27,5 @@ public class EventShortDto {
     private Boolean paid;
     @NotBlank
     private String title;
-    private Long views;
+    private long views;
 }

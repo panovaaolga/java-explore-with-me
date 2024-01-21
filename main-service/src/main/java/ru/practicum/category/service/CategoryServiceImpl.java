@@ -12,7 +12,6 @@ import ru.practicum.category.dto.NewCategoryDto;
 import ru.practicum.category.repository.CategoryRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -20,12 +19,14 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public List<CategoryDto> getCategories(int from, int size) {
         return CategoryMapper.mapToDtoList(categoryRepository
                 .findAll(PageRequest.of(from / size, size)).getContent());
     }
 
     @Override
+    @Transactional(readOnly = true)
     public CategoryDto getCategoryDtoById(long catId) {
         return CategoryMapper.mapToCategoryDto(categoryRepository.findById(catId)
                 .orElseThrow(() -> new NotFoundException(Category.class.getName(), catId)));
@@ -50,12 +51,11 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryDto updateCategory(long catId, CategoryDto categoryDto) {
         Category category = categoryRepository.findById(catId)
                 .orElseThrow(() ->  new NotFoundException(Category.class.getName(), catId));
-        if (!categoryDto.getName().equals(category.getName())) {
-            category.setName(categoryDto.getName());
-        }
+        category.setName(categoryDto.getName());
         return CategoryMapper.mapToCategoryDto(categoryRepository.save(category));
     }
 
+    @Transactional(readOnly = true)
     public Category getCategoryById(long catId) {
         return categoryRepository.findById(catId).orElseThrow(() ->
                 new NotFoundException(Category.class.getName(), catId));

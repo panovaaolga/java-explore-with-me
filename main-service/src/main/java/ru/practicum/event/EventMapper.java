@@ -17,7 +17,7 @@ import java.util.List;
 
 @Slf4j
 public class EventMapper {
-    public static EventShortDto mapToShortEvent(Event event) {
+    public static EventShortDto mapToShortEvent(Event event, long views) {
         EventShortDto eventShortDto = new EventShortDto();
         eventShortDto.setAnnotation(event.getAnnotation());
         eventShortDto.setCategory(CategoryMapper.mapToCategoryDto(event.getCategory()));
@@ -27,11 +27,11 @@ public class EventMapper {
         eventShortDto.setInitiator(UserMapper.mapToUserShort(event.getInitiator()));
         eventShortDto.setPaid(event.isPaid());
         eventShortDto.setTitle(event.getTitle());
-        //eventShortDto.setViews(views);
+        eventShortDto.setViews(views);
         return eventShortDto;
     }
 
-    public static EventFullDto mapToFullEvent(Event event) {
+    public static EventFullDto mapToFullEvent(Event event, long views) {
         EventFullDto eventFullDto = new EventFullDto();
         eventFullDto.setAnnotation(event.getAnnotation());
         eventFullDto.setCategory(CategoryMapper.mapToCategoryDto(event.getCategory()));
@@ -48,7 +48,7 @@ public class EventMapper {
         eventFullDto.setRequestModeration(event.isRequestModeration());
         eventFullDto.setState(event.getState());
         eventFullDto.setTitle(event.getTitle());
-       // eventFullDto.setViews(views);
+        eventFullDto.setViews(views);
         return eventFullDto;
     }
 
@@ -70,7 +70,6 @@ public class EventMapper {
         event.setTitle(newEventDto.getTitle());
         event.setState(EventState.PENDING);
         event.setInitiator(initiator);
-        event.setViews(0); //доделать
         log.info("event: {}", event);
         return event;
     }
@@ -84,5 +83,19 @@ public class EventMapper {
             //добавить в конструктор Map<Long(eventId),stats> для views
         }
         return shortEvents;
+    }
+
+    public static EventShortDto mapToShortEvent(Event event) {
+        EventShortDto eventShortDto = new EventShortDto();
+        eventShortDto.setAnnotation(event.getAnnotation());
+        eventShortDto.setCategory(CategoryMapper.mapToCategoryDto(event.getCategory()));
+        eventShortDto.setConfirmedRequests(event.getConfirmedRequests());
+        eventShortDto.setEventDate(event.getEventDate());
+        eventShortDto.setId(event.getId());
+        eventShortDto.setInitiator(UserMapper.mapToUserShort(event.getInitiator()));
+        eventShortDto.setPaid(event.isPaid());
+        eventShortDto.setTitle(event.getTitle());
+      //  eventShortDto.setViews(views);
+        return eventShortDto;
     }
 }

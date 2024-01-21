@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS public.events (
 	title varchar NOT NULL,
 	lat float NOT NULL,
 	lon float NOT NULL,
-	views bigint, --доделать
+	--views bigint, --доделать
 	CONSTRAINT events_pk PRIMARY KEY (event_id),
 	CONSTRAINT events_un UNIQUE (title),
 	CONSTRAINT events_categories_fk FOREIGN KEY (category_id) REFERENCES public.categories(category_id),

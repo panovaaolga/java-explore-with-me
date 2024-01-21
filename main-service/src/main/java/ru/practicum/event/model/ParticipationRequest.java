@@ -1,5 +1,6 @@
 package ru.practicum.event.model;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import ru.practicum.user.User;
@@ -9,19 +10,18 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "requests")
-@Getter
-@Setter
+@Data
 public class ParticipationRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "participation_id")
+    @Column(name = "request_id")
     private Long id;
     @Column
     private LocalDateTime created;
-    @JoinColumn(referencedColumnName = "event_id")
+    @JoinColumn(name = "event_id")
     @ManyToOne
     private Event event;
-    @JoinColumn(referencedColumnName = "user_id")
+    @JoinColumn(name = "requester_id")
     @ManyToOne
     private User requester;
     @Column

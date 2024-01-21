@@ -19,13 +19,14 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public List<UserDto> getUsers(List<Long> ids, int from, int size) {
         if (ids == null) {
             return UserMapper.mapToDtoList(userRepository
                     .findAll(PageRequest.of(from / size, size)).getContent());
         } else {
             return UserMapper.mapToDtoList(userRepository
-                    .findByIdInOrderById(ids, PageRequest.of(from / size, size)).getContent());
+                    .findByIdIn(ids, PageRequest.of(from / size, size)).getContent());
         }
     }
 
@@ -44,6 +45,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public User getUserById(long userId) {
         return userRepository.findById(userId).orElseThrow(() -> new NotFoundException(User.class.getName(), userId));
     }

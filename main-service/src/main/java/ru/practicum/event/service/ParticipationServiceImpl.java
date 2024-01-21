@@ -1,6 +1,7 @@
 package ru.practicum.event.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.event.ParticipationRequestMapper;
@@ -19,6 +20,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class ParticipationServiceImpl implements ParticipationService {
     private final ParticipationRepository participationRepository;
     private final UserService userService;
@@ -44,6 +46,7 @@ public class ParticipationServiceImpl implements ParticipationService {
         if (!event.getState().equals(EventState.PUBLISHED)) {
             throw new ForbiddenEventConditionException("Нельзя подать заявку на участие в неопубликованном событии");
         }
+        log.info("limit = {}, confirmed = {}", event.getParticipantLimit(), event.getConfirmedRequests());
         if (event.getParticipantLimit() == event.getConfirmedRequests()) {
             throw new ForbiddenEventConditionException("Лимит одобренных заявок на участие исчерпан");
         }
@@ -53,6 +56,7 @@ public class ParticipationServiceImpl implements ParticipationService {
         request.setCreated(LocalDateTime.now());
         if (!event.isRequestModeration()) {
             request.setStatus(ParticipationStatus.CONFIRMED);
+            event.setConfirmedRequests(event.getConfirmedRequests() + 1);
         } else {
             request.setStatus(ParticipationStatus.PENDING);
         }

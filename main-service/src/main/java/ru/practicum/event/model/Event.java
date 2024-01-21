@@ -1,22 +1,20 @@
 package ru.practicum.event.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.ColumnDefault;
 import ru.practicum.category.Category;
 import ru.practicum.compilation.Compilation;
 import ru.practicum.user.User;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
 @Table(name = "events")
-@Data
+@Getter
+@Setter
 public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -59,11 +57,6 @@ public class Event {
     private EventState state;
     @Column(length = 120)
     private String title;
-    @Column
-    private long views; //как обновлять статистику?? Каждый раз после просмотра? Нам это здесь не надо вообще, кажется
-    //Для дто можно подтягивать вызов статс клиент с получением статистики по запросу
-    @JoinTable(name = "compilations_events", joinColumns = @JoinColumn(name = "event_id"),
-            inverseJoinColumns = @JoinColumn(name = "compilation_id"))
-    @ManyToMany
+    @ManyToMany(mappedBy = "events")
     private Set<Compilation> compilations;
 }

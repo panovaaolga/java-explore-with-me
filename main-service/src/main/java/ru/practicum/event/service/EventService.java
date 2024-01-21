@@ -9,9 +9,10 @@ import java.util.List;
 public interface EventService {
 
     List<EventShortDto> getEventsPublic(String text, List<Long> categories, Boolean paid, String rangeStart,
-                                        String rangeEnd, boolean onlyAvailable, SortOption sort, int from, int size);
+                                        String rangeEnd, boolean onlyAvailable, SortOption sort, int from, int size,
+                                        String ipAddr, String path);
 
-    EventFullDto getEventByIdPublic(long eventId);
+    EventFullDto getEventByIdPublic(long eventId, String ipAddr, String uri);
 
     List<EventFullDto> getEventsAdmin(List<Long> users, List<String> states, List<Long> categories, String rangeStart,
                                       String rangeEnd, int from, int size);

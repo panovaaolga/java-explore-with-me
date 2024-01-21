@@ -25,10 +25,11 @@ public class CompilationMapper {
         CompilationDto compilationDto = new CompilationDto();
         compilationDto.setId(compilation.getId());
         compilationDto.setPinned(compilation.isPinned());
-        compilationDto.setTitle(compilationDto.getTitle());
+        compilationDto.setTitle(compilation.getTitle());
         if (!compilation.getEvents().isEmpty()) {
             for (Event e : compilation.getEvents()) {
                 eventsShort.add(EventMapper.mapToShortEvent(e));
+                //добавить про views
             }
         }
         compilationDto.setEvents(eventsShort);
