@@ -48,7 +48,8 @@ public class ExceptionHandlerEwm {
         return new ResponseEntity<Object>(error, HttpStatus.CONFLICT);
     }
 
-    @ExceptionHandler({MethodArgumentNotValidException.class, MissingServletRequestParameterException.class})
+    @ExceptionHandler({MethodArgumentNotValidException.class, MissingServletRequestParameterException.class,
+            DateValidationException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ApiError> handleIncorrectRequest(Exception ex) {
         ApiError error = new ApiError();

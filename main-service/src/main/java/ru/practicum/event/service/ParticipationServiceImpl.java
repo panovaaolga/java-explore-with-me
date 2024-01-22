@@ -47,14 +47,14 @@ public class ParticipationServiceImpl implements ParticipationService {
             throw new ForbiddenEventConditionException("Нельзя подать заявку на участие в неопубликованном событии");
         }
         log.info("limit = {}, confirmed = {}", event.getParticipantLimit(), event.getConfirmedRequests());
-        if (event.getParticipantLimit() == event.getConfirmedRequests()) {
+        if (event.getParticipantLimit() != 0 && event.getParticipantLimit() == event.getConfirmedRequests()) {
             throw new ForbiddenEventConditionException("Лимит одобренных заявок на участие исчерпан");
         }
         ParticipationRequest request = new ParticipationRequest();
         request.setRequester(userService.getUserById(userId));
         request.setEvent(eventService.getEventById(eventId));
         request.setCreated(LocalDateTime.now());
-        if (!event.isRequestModeration()) {
+        if (!event.isRequestModeration() || event.getParticipantLimit() == 0) {
             request.setStatus(ParticipationStatus.CONFIRMED);
             event.setConfirmedRequests(event.getConfirmedRequests() + 1);
         } else {

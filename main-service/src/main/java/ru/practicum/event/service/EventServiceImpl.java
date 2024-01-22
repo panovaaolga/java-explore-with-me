@@ -6,6 +6,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import ru.practicum.category.Category;
 import ru.practicum.category.service.CategoryService;
 import ru.practicum.client.StatsClient;
@@ -17,11 +18,13 @@ import ru.practicum.event.dto.*;
 import ru.practicum.event.model.*;
 import ru.practicum.event.repository.EventRepository;
 import ru.practicum.event.repository.ParticipationRepository;
+import ru.practicum.exceptions.DateValidationException;
 import ru.practicum.exceptions.ForbiddenEventConditionException;
 import ru.practicum.exceptions.NotFoundException;
 import ru.practicum.user.User;
 import ru.practicum.user.service.UserService;
 
+import javax.xml.bind.ValidationException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -49,9 +52,13 @@ public class EventServiceImpl implements EventService {
         if (rangeStart == null && rangeEnd == null) {
             rangeStart = LocalDateTime.now();
         }
-        List<Event> events = eventRepository.findByAnnotationOrDescriptionContainingIgnoreCaseAndCategoryIdInAndPaidAndEventDateAfterAndEventDateBeforeAndState(text,
-                text, categories, paid, rangeStart, rangeEnd, EventState.PUBLISHED, PageRequest.of(from / size, size)).getContent();
 
+        if (rangeStart != null && rangeEnd != null && rangeStart.isAfter(rangeEnd)) {
+            throw new DateValidationException();
+        }
+
+        List<Event> events = eventRepository.findAllByParamPublic(text, categories, paid, rangeStart, rangeEnd,
+                EventState.PUBLISHED, PageRequest.of(from / size, size)).getContent();
         log.info("events: {}", events);
 
         //доделать onlyAvailable
@@ -61,15 +68,17 @@ public class EventServiceImpl implements EventService {
             for (Event e : events) {
                 eventShortDtoList.add(EventMapper.mapToShortEvent(e, getViews(e)));
             }
-            switch (sort) {
-                case VIEWS:
-                    eventShortDtoList = eventShortDtoList.stream().sorted((o1, o2) -> o2.getViews()
-                            .compareTo(o1.getViews())).collect(Collectors.toList());
-                    break;
-                case EVENT_DATE:
-                    eventShortDtoList = eventShortDtoList.stream().sorted((o1, o2) -> o2.getEventDate().compareTo(o1.getEventDate()))
-                            .collect(Collectors.toList());
-                    break;
+            if (sort != null) {
+                switch (sort) {
+                    case VIEWS:
+                        eventShortDtoList = eventShortDtoList.stream().sorted((o1, o2) -> o2.getViews()
+                                .compareTo(o1.getViews())).collect(Collectors.toList());
+                        break;
+                    case EVENT_DATE:
+                        eventShortDtoList = eventShortDtoList.stream().sorted((o1, o2) -> o2.getEventDate().compareTo(o1.getEventDate()))
+                                .collect(Collectors.toList());
+                        break;
+                }
             }
         }
         return eventShortDtoList;
@@ -93,8 +102,8 @@ public class EventServiceImpl implements EventService {
     public List<EventFullDto> getEventsAdmin(List<Long> users, List<EventState> states, List<Long> categories,
                                              LocalDateTime rangeStart, LocalDateTime rangeEnd, int from, int size) {
         List<EventFullDto> eventFullDtoList = new ArrayList<>();
-        List<Event> events = eventRepository.findByInitiatorIdInAndStateInAndCategoryIdInAndEventDateBetween(users,
-                states, categories, rangeStart, rangeEnd, PageRequest.of(from / size, size)).getContent();
+        List<Event> events = eventRepository.findAllByParam(users, states, categories, rangeStart, rangeEnd,
+                PageRequest.of(from / size, size)).getContent();
         if (!events.isEmpty()) {
             for (Event e : events) {
                 eventFullDtoList.add(EventMapper.mapToFullEvent(e, getViews(e)));
@@ -221,8 +230,10 @@ public class EventServiceImpl implements EventService {
     @Override
     @Transactional
     public EventFullDto updateEventPrivate(long userId, long eventId, UpdateEventUserRequest updateEventUserRequest) {
+        log.info("action: {}", updateEventUserRequest.getStateAction());
         Event event = eventRepository.findByIdAndInitiatorId(eventId, userId)
                 .orElseThrow(() -> new NotFoundException(Event.class.getName(), eventId));
+        log.info("state 1: {}", event.getState());
         if (event.getState().equals(EventState.PUBLISHED)) {
             throw new ForbiddenEventConditionException("Нельзя изменить уже опубликованное событие");
         }
@@ -403,8 +414,7 @@ public class EventServiceImpl implements EventService {
                             .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
                     LocalDateTime.now()
                             .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
-                    new String[]{"/events", "/events/" + event.getId()}, false, 0, 10);
-            log.info("viewStats: {}", viewStats);
+                    new String[]{"/events", "/events/" + event.getId()}, true, 0, 10);
             if (!viewStats.isEmpty()) {
                 for (ViewStats v : viewStats) {
                     views = views + v.getHits();
