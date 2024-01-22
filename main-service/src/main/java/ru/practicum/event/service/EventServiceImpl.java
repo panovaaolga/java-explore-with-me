@@ -37,7 +37,7 @@ public class EventServiceImpl implements EventService {
     private final StatsClient statsClient;
     private final ParticipationRepository participationRepository;
 
-    private final static String APP_NAME = "explore-with-me";
+    private static final String APP_NAME = "explore-with-me";
 
 
     @Override
