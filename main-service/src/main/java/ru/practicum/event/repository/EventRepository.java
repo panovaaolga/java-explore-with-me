@@ -45,6 +45,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "AND (e.category.id IN :categories OR :categories IS null) " +
             "AND (e.eventDate > :start OR CAST(:start AS LocalDateTime) IS null) " +
             "AND (e.eventDate < :end OR CAST(:end AS LocalDateTime) IS null) ")
-    Page<Event> findAllByParam(List<Long> users, List<EventState> states, List<Long> categories, LocalDateTime start,
-                               LocalDateTime end, Pageable pageable);
+    Page<Event> findAllByParam(@Param("users") List<Long> users, @Param("states") List<EventState> states,
+                               @Param("categories") List<Long> categories, @Param("start") LocalDateTime start,
+                               @Param("end") LocalDateTime end, Pageable pageable);
 }
