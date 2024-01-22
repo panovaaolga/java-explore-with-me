@@ -1,8 +1,6 @@
 package ru.practicum.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import ru.practicum.dto.EndpointHitDto;
 import lombok.RequiredArgsConstructor;
 import ru.practicum.dto.ViewStats;
@@ -12,7 +10,6 @@ import org.springframework.stereotype.Service;
 import ru.practicum.repository.StatsRepository;
 
 import javax.transaction.Transactional;
-import javax.validation.ValidationException;
 import java.time.LocalDateTime;
 import java.util.List;
 
