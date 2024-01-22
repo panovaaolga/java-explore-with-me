@@ -59,9 +59,11 @@ public class EventServiceImpl implements EventService {
 
         List<Event> events = eventRepository.findAllByParamPublic(text, categories, paid, rangeStart, rangeEnd,
                 EventState.PUBLISHED, PageRequest.of(from / size, size)).getContent();
-        log.info("events: {}", events);
 
-        //доделать onlyAvailable
+        if (onlyAvailable) {
+            events = events.stream().filter(event -> event.getParticipantLimit() == 0 ||
+                    event.getParticipantLimit() > event.getConfirmedRequests()).collect(Collectors.toList());
+        }
         EndpointHitDto endpointHitDto = addToStats(ipAddr, uri);
         statsClient.addHit(endpointHitDto);
         if (!events.isEmpty()) {
