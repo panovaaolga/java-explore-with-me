@@ -5,7 +5,6 @@ import ru.practicum.category.dto.CategoryDto;
 import ru.practicum.category.dto.NewCategoryDto;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface CategoryService {
 

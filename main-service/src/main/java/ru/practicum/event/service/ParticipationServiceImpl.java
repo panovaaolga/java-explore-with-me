@@ -66,7 +66,7 @@ public class ParticipationServiceImpl implements ParticipationService {
     @Override
     @Transactional
     public ParticipationRequestDto cancelRequest(long userId, long requestId) {
-        ParticipationRequest request = participationRepository.findByRequesterIdAndEventId(userId, requestId)
+        ParticipationRequest request = participationRepository.findByRequesterIdAndId(userId, requestId)
                 .orElseThrow(() -> new NotFoundException(ParticipationRequest.class.getName(), requestId));
 
         if (!request.getStatus().equals(ParticipationStatus.PENDING)) {

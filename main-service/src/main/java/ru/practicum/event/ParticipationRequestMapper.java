@@ -1,7 +1,6 @@
 package ru.practicum.event;
 
 import ru.practicum.event.dto.ParticipationRequestDto;
-import ru.practicum.event.model.Event;
 import ru.practicum.event.model.ParticipationRequest;
 
 import java.util.ArrayList;

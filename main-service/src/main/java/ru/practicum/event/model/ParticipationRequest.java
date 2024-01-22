@@ -1,6 +1,5 @@
 package ru.practicum.event.model;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import ru.practicum.user.User;
@@ -10,7 +9,8 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "requests")
-@Data
+@Getter
+@Setter
 public class ParticipationRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

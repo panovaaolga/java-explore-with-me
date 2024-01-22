@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.event.dto.ParticipationRequestDto;
 import ru.practicum.event.service.ParticipationService;
 
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @RestController
