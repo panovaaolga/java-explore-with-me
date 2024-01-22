@@ -21,7 +21,7 @@ public class StatsClient {
     private static final String POST_PREFIX = "/hit";
     private final RestTemplate restTemplate = new RestTemplate();
 
-    @Value("${ewm-stats-server.url}")
+    @Value("${stats-server.url}")
     private String statsUrl;
 
     public List<ViewStats> getStats(String start, String end, String[] uris, boolean unique, int from, int size) {

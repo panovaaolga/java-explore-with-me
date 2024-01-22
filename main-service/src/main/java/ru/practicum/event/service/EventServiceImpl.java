@@ -256,13 +256,14 @@ public class EventServiceImpl implements EventService {
         }
         LocalDateTime now = LocalDateTime.now();
         if (updateEventUserRequest.getEventDate() != null) {
-            if (event.getState().equals(EventState.PENDING) && now.plusHours(2).isBefore(updateEventUserRequest
-                    .getEventDate())) {
+            log.info("new event date: {}", updateEventUserRequest.getEventDate());
+            if (now.plusHours(2).isAfter(updateEventUserRequest.getEventDate())) {
                 throw new ForbiddenEventConditionException("До события не может быть менее 2-х часов");
             }
             event.setEventDate(updateEventUserRequest.getEventDate());
         } else {
-            if (event.getState().equals(EventState.PENDING) && now.plusHours(2).isBefore(event.getEventDate())) {
+            log.info("eventDate: {}", event.getEventDate());
+            if (now.plusHours(2).isAfter(event.getEventDate())) {
                 throw new ForbiddenEventConditionException("Нельзя изменить событие, " +
                         "до которого осталось менее 2-х часов");
             }
