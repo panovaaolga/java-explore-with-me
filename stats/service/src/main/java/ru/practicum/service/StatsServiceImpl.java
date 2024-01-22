@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import ru.practicum.repository.StatsRepository;
 
 import javax.transaction.Transactional;
+import javax.validation.ValidationException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -30,6 +31,9 @@ public class StatsServiceImpl implements StatsService {
     @Override
     public List<ViewStats> getStats(LocalDateTime start, LocalDateTime end, String[] uris,
                                     boolean unique, int from, int size) {
+        if (start.isAfter(end)) {
+            throw new ValidationException("Дата start не может быть позже end");
+        }
         if (unique) {
             if (uris == null) {
                 return statsRepository.findUniqueHits(start, end, PageRequest.of(from / size, size))
