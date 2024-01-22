@@ -1,6 +1,7 @@
 package ru.practicum.service;
 
 import lombok.extern.slf4j.Slf4j;
+import ru.practicum.ForbiddenDateException;
 import ru.practicum.dto.EndpointHitDto;
 import lombok.RequiredArgsConstructor;
 import ru.practicum.dto.ViewStats;
@@ -31,7 +32,7 @@ public class StatsServiceImpl implements StatsService {
     public List<ViewStats> getStats(LocalDateTime start, LocalDateTime end, String[] uris,
                                     boolean unique, int from, int size) {
         if (start.isAfter(end)) {
-            throw new IllegalArgumentException("Дата start не может быть позже end");
+            throw new ForbiddenDateException();
         }
         if (unique) {
             if (uris == null) {
