@@ -11,8 +11,8 @@ import ru.practicum.event.model.EventState;
 import ru.practicum.event.model.ParticipationRequest;
 import ru.practicum.event.model.ParticipationStatus;
 import ru.practicum.event.repository.ParticipationRepository;
-import ru.practicum.exceptions.ForbiddenEventConditionException;
 import ru.practicum.exceptions.NotFoundException;
+import ru.practicum.exceptions.UnsupportedActionException;
 import ru.practicum.user.service.UserService;
 
 import java.time.LocalDateTime;
@@ -37,18 +37,18 @@ public class ParticipationServiceImpl implements ParticipationService {
     @Transactional
     public ParticipationRequestDto createRequest(long userId, long eventId) {
         if (participationRepository.findByRequesterIdAndEventId(userId, eventId).isPresent()) {
-            throw new ForbiddenEventConditionException("Повторно подать заявку на участие невозможно");
+            throw new UnsupportedActionException(ParticipationServiceImpl.class.getName(), "Повторно подать заявку на участие невозможно");
         }
         Event event = eventService.getEventById(eventId);
         if (event.getInitiator().getId() == userId) {
-            throw new ForbiddenEventConditionException("Нельзя подать заявку на участие в своем событии");
+            throw new UnsupportedActionException(ParticipationServiceImpl.class.getName(), "Нельзя подать заявку на участие в своем событии");
         }
         if (!event.getState().equals(EventState.PUBLISHED)) {
-            throw new ForbiddenEventConditionException("Нельзя подать заявку на участие в неопубликованном событии");
+            throw new UnsupportedActionException(ParticipationServiceImpl.class.getName(), "Нельзя подать заявку на участие в неопубликованном событии");
         }
         log.info("limit = {}, confirmed = {}", event.getParticipantLimit(), event.getConfirmedRequests());
         if (event.getParticipantLimit() != 0 && event.getParticipantLimit() == event.getConfirmedRequests()) {
-            throw new ForbiddenEventConditionException("Лимит одобренных заявок на участие исчерпан");
+            throw new UnsupportedActionException(ParticipationServiceImpl.class.getName(), "Лимит одобренных заявок на участие исчерпан");
         }
         ParticipationRequest request = new ParticipationRequest();
         request.setRequester(userService.getUserById(userId));
@@ -70,7 +70,7 @@ public class ParticipationServiceImpl implements ParticipationService {
                 .orElseThrow(() -> new NotFoundException(ParticipationRequest.class.getName(), requestId));
 
         if (!request.getStatus().equals(ParticipationStatus.PENDING)) {
-            throw new ForbiddenEventConditionException("Нельзя отозвать заявку на участие со статусом " +
+            throw new UnsupportedActionException(ParticipationServiceImpl.class.getName(), "Нельзя отозвать заявку на участие со статусом " +
                     request.getStatus());
         }
         request.setStatus(ParticipationStatus.CANCELED);

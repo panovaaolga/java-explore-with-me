@@ -17,8 +17,8 @@ import ru.practicum.event.model.*;
 import ru.practicum.event.repository.EventRepository;
 import ru.practicum.event.repository.ParticipationRepository;
 import ru.practicum.exceptions.DateValidationException;
-import ru.practicum.exceptions.ForbiddenEventConditionException;
 import ru.practicum.exceptions.NotFoundException;
+import ru.practicum.exceptions.UnsupportedActionException;
 import ru.practicum.user.User;
 import ru.practicum.user.service.UserService;
 
@@ -126,7 +126,7 @@ public class EventServiceImpl implements EventService {
                         action = "Отклонить";
                         break;
                 }
-                throw new ForbiddenEventConditionException(action + " можно только события со статусом PENDING");
+                throw new UnsupportedActionException(EventServiceImpl.class.getName(), action + " можно только события со статусом PENDING");
             }
 
             switch (updateEventAdminRequest.getStateAction()) {
@@ -137,12 +137,12 @@ public class EventServiceImpl implements EventService {
                     LocalDateTime now = LocalDateTime.now();
                     if (updateEventAdminRequest.getEventDate() != null) {
                         if (now.plusHours(1).isAfter(updateEventAdminRequest.getEventDate())) {
-                            throw new ForbiddenEventConditionException("Время начала события должно быть минимум " +
+                            throw new UnsupportedActionException(EventServiceImpl.class.getName(), "Время начала события должно быть минимум " +
                                     "на час позже времени публикации");
                         }
                     } else {
                         if (now.plusHours(1).isAfter(event.getEventDate())) {
-                            throw new ForbiddenEventConditionException("Время начала события должно быть минимум " +
+                            throw new UnsupportedActionException(EventServiceImpl.class.getName(), "Время начала события должно быть минимум " +
                                     "на час позже времени публикации");
                         }
                     }
@@ -152,11 +152,11 @@ public class EventServiceImpl implements EventService {
             }
         } else {
             if (event.getState().equals(EventState.CANCELED)) {
-                throw  new ForbiddenEventConditionException("Нельзя изменить отмененное событие");
+                throw  new UnsupportedActionException(EventServiceImpl.class.getName(), "Нельзя изменить отмененное событие");
             }
             if (updateEventAdminRequest.getEventDate() != null) {
                 if (event.getPublishedOn() != null && event.getPublishedOn().plusHours(1).isAfter(event.getEventDate())) {
-                    throw new ForbiddenEventConditionException("Время начала события должно быть минимум " +
+                    throw new UnsupportedActionException(EventServiceImpl.class.getName(), "Время начала события должно быть минимум " +
                             "на час позже времени публикации");
                 }
                 event.setEventDate(updateEventAdminRequest.getEventDate());
@@ -215,7 +215,7 @@ public class EventServiceImpl implements EventService {
             return EventMapper.mapToFullEvent(eventRepository
                     .save(EventMapper.mapToEvent(newEventDto, initiator, category)), 0);
         }
-        throw new ForbiddenEventConditionException("До события не может быть менее 2-х часов");
+        throw new UnsupportedActionException(EventServiceImpl.class.getName(), "До события не может быть менее 2-х часов");
     }
 
     @Override
@@ -234,20 +234,20 @@ public class EventServiceImpl implements EventService {
                 .orElseThrow(() -> new NotFoundException(Event.class.getName(), eventId));
         log.info("state 1: {}", event.getState());
         if (event.getState().equals(EventState.PUBLISHED)) {
-            throw new ForbiddenEventConditionException("Нельзя изменить уже опубликованное событие");
+            throw new UnsupportedActionException(EventServiceImpl.class.getName(), "Нельзя изменить уже опубликованное событие");
         }
         if (updateEventUserRequest.getStateAction() != null) {
             switch (updateEventUserRequest.getStateAction()) {
                 case CANCEL_REVIEW:
                     if (event.getState().equals(EventState.CANCELED)) {
-                        throw new ForbiddenEventConditionException("Событие уже отменено");
+                        throw new UnsupportedActionException(EventServiceImpl.class.getName(), "Событие уже отменено");
                     } else {
                         event.setState(EventState.CANCELED);
                     }
                     break;
                 case SEND_TO_REVIEW:
                     if (event.getState().equals(EventState.PENDING)) {
-                        throw new ForbiddenEventConditionException("Событие уже находится на рассмотрении");
+                        throw new UnsupportedActionException(EventServiceImpl.class.getName(), "Событие уже находится на рассмотрении");
                     } else {
                         event.setState(EventState.PENDING);
                     }
@@ -258,13 +258,13 @@ public class EventServiceImpl implements EventService {
         if (updateEventUserRequest.getEventDate() != null) {
             log.info("new event date: {}", updateEventUserRequest.getEventDate());
             if (now.plusHours(2).isAfter(updateEventUserRequest.getEventDate())) {
-                throw new ForbiddenEventConditionException("До события не может быть менее 2-х часов");
+                throw new UnsupportedActionException(EventServiceImpl.class.getName(), "До события не может быть менее 2-х часов");
             }
             event.setEventDate(updateEventUserRequest.getEventDate());
         } else {
             log.info("eventDate: {}", event.getEventDate());
             if (now.plusHours(2).isAfter(event.getEventDate())) {
-                throw new ForbiddenEventConditionException("Нельзя изменить событие, " +
+                throw new UnsupportedActionException(EventServiceImpl.class.getName(), "Нельзя изменить событие, " +
                         "до которого осталось менее 2-х часов");
             }
         }
@@ -312,7 +312,7 @@ public class EventServiceImpl implements EventService {
         Event event = eventRepository.findByIdAndInitiatorId(eventId, userId)
                 .orElseThrow(() -> new NotFoundException(Event.class.getName(), eventId));
         if (!event.isRequestModeration() || event.getParticipantLimit() == 0) {
-            throw new ForbiddenEventConditionException("Для события не требуется подтверждение заявок " +
+            throw new UnsupportedActionException(EventServiceImpl.class.getName(), "Для события не требуется подтверждение заявок " +
                     "или не установлен лимит участников");
         }
         List<ParticipationRequest> participants = participationRepository
@@ -321,7 +321,7 @@ public class EventServiceImpl implements EventService {
 
         for (ParticipationRequest p : participants) {
             if (!p.getStatus().equals(ParticipationStatus.PENDING)) {
-                throw new ForbiddenEventConditionException("Заявки должны находиться в статусе ожидания модерации");
+                throw new UnsupportedActionException(EventServiceImpl.class.getName(), "Заявки должны находиться в статусе ожидания модерации");
             }
         }
 
@@ -333,7 +333,7 @@ public class EventServiceImpl implements EventService {
                 int limit = event.getParticipantLimit();
                 int confirmedRequests = event.getConfirmedRequests();
                 if (limit == confirmedRequests) {
-                    throw new ForbiddenEventConditionException("Лимит доступных заявок для одобрения исчерпан");
+                    throw new UnsupportedActionException(EventServiceImpl.class.getName(), "Лимит доступных заявок для одобрения исчерпан");
                 }
 
                 if (participants.size() > limit - confirmedRequests) {

@@ -9,7 +9,6 @@ import java.util.Set;
 
 @Data
 public class EventRequestStatusUpdateRequest {
-    @NotNull
     @NotEmpty
     private Set<Long> requestIds;
     private ParticipationStatus status;

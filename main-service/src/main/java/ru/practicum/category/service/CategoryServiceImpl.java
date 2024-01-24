@@ -4,12 +4,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.event.service.EventServiceImpl;
 import ru.practicum.exceptions.NotFoundException;
 import ru.practicum.category.Category;
 import ru.practicum.category.CategoryMapper;
 import ru.practicum.category.dto.CategoryDto;
 import ru.practicum.category.dto.NewCategoryDto;
 import ru.practicum.category.repository.CategoryRepository;
+import ru.practicum.exceptions.UnsupportedActionException;
 
 import java.util.List;
 
@@ -40,6 +42,9 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public void deleteCategory(long catId) {
+        if (!getCategoryById(catId).getEvents().isEmpty()) {
+            throw new UnsupportedActionException(CategoryServiceImpl.class.getName(), "Категория не пуста");
+        }
         categoryRepository.deleteById(catId);
     }
 

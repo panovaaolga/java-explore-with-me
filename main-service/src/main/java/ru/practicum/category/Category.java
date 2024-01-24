@@ -1,8 +1,10 @@
 package ru.practicum.category;
 
 import lombok.Data;
+import ru.practicum.event.model.Event;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Entity
 @Table(name = "categories")
@@ -14,4 +16,6 @@ public class Category {
     private Long id;
     @Column(name = "category_name", unique = true)
     private String name;
+    @OneToMany(mappedBy = "category")
+    private Set<Event> events;
 }

@@ -1,8 +1,6 @@
 package ru.practicum.exceptions;
 
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.HibernateException;
-import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,17 +48,17 @@ public class ExceptionHandlerEwm extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(error, error.getStatus());
     }
 
-    @ExceptionHandler(ForbiddenEventConditionException.class)
+    @ExceptionHandler(UnsupportedActionException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ResponseEntity<Object> handleForbiddenConditions(ForbiddenEventConditionException ex) {
+    public ResponseEntity<Object> handleForbiddenConditions(UnsupportedActionException ex) {
         ApiError error = new ApiError();
         error.setMessage(ex.getMessage());
-        error.setReason("Нарушены ограничения, действующие для данного события");
+        error.setReason("Попытка выполнить действие, нарушающее ограничение");
         error.setStatus(HttpStatus.FORBIDDEN);
         return new ResponseEntity<Object>(error, HttpStatus.CONFLICT);
     }
 
-    @ExceptionHandler({ConstraintViolationException.class, SQLException.class, HibernateException.class})
+    @ExceptionHandler(SQLException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ResponseEntity<Object> handleForbiddenConditions(Exception ex) {
         ApiError error = new ApiError();
