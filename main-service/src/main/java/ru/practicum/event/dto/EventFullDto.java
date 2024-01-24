@@ -2,7 +2,6 @@ package ru.practicum.event.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
-import org.springframework.lang.Nullable;
 import ru.practicum.category.dto.CategoryDto;
 import ru.practicum.event.model.EventState;
 import ru.practicum.event.model.Location;
