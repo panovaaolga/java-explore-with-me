@@ -35,7 +35,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         if (userId == subscriptionId) {
             throw new UnsupportedActionException(SubscriptionServiceImpl.class.getName(), "Нельзя подписаться на себя");
         }
-        if(isSubscriber(userId, subscriptionId)) {
+        if (isSubscriber(userId, subscriptionId)) {
             throw new UnsupportedActionException(SubscriptionServiceImpl.class.getName(), "Нельзя подписаться повторно");
         }
         User user = userService.getUserById(userId);
@@ -51,7 +51,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     @Override
     @Transactional
     public void deleteSubscription(long userId, long subscriptionId) {
-        if(isSubscriber(userId, subscriptionId)) {
+        if (isSubscriber(userId, subscriptionId)) {
             User subscriber = userService.getUserById(userId);
             User subscription = userService.getUserById(subscriptionId);
             subscriber.getSubscriptions().remove(subscription);
