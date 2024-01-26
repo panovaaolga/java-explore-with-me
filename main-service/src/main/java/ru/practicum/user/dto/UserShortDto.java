@@ -15,4 +15,6 @@ public class UserShortDto {
     @NotBlank(message = "Класс: UserShortDto. Поле: name. Причина: NotBlank")
     @Size(min = 2, max = 250, message = "Класс: UserShortDto. Поле: name. Причина: Size")
     private String name;
+    private long subscribersCount;
+    private long subscriptionsCount;
 }

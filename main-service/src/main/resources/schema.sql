@@ -5,6 +5,7 @@ DROP TABLE IF EXISTS public.requests;
 DROP TABLE IF EXISTS public.events;
 DROP TABLE IF EXISTS public.categories RESTRICT;
 DROP TABLE IF EXISTS public.locations;
+DROP TABLE IF EXISTS public.subscribers_subscriptions;
 
 
 CREATE table IF NOT EXISTS public.users (
@@ -49,7 +50,7 @@ CREATE TABLE IF NOT EXISTS public.events (
 	participant_limit int NOT NULL,
 	published timestamp without time zone NULL,
 	moderation boolean NOT NULL,
-	state varchar NOT NULL,
+	state varchar(9) NOT NULL,
 	title varchar(120) NOT NULL,
 	lat float NOT NULL,
 	lon float NOT NULL,
@@ -74,9 +75,17 @@ CREATE TABLE IF NOT EXISTS public.requests (
 	event_id bigint NOT NULL,
 	requester_id bigint NOT NULL,
 	created timestamp without time zone NOT NULL,
-	status varchar NOT NULL,
+	status varchar(9) NOT NULL,
 	CONSTRAINT requests_pk PRIMARY KEY (request_id),
 	CONSTRAINT requests_events_fk FOREIGN KEY (event_id) REFERENCES public.events(event_id),
 	CONSTRAINT requests_users_fk FOREIGN KEY (requester_id) REFERENCES public.users(user_id)
+);
+
+CREATE table IF NOT EXISTS public.subscribers_subscriptions(
+ user_id bigint NOT NULL,
+ subscriber_id bigint NOT NULL,
+ CONSTRAINT subscribers_pk PRIMARY KEY (user_id, subscriber_id),
+ CONSTRAINT subscribers_fk FOREIGN KEY (subscriber_id) REFERENCES public.users(user_id),
+ CONSTRAINT users_fk FOREIGN KEY (user_id) REFERENCES public.users(user_id)
 );
 

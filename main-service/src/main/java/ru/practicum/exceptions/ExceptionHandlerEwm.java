@@ -1,6 +1,7 @@
 package ru.practicum.exceptions;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,15 @@ import java.sql.SQLException;
 @RestControllerAdvice
 @Slf4j
 public class ExceptionHandlerEwm extends ResponseEntityExceptionHandler {
+    @Override
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ResponseEntity<Object> handleTypeMismatch(TypeMismatchException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        ApiError error = new ApiError();
+        error.setMessage(ex.getMessage());
+        error.setReason("Некорректный запрос");
+        error.setStatus(HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<Object>(error, HttpStatus.BAD_REQUEST);
+    }
 
     @Override
     @ResponseStatus(HttpStatus.BAD_REQUEST)
